@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import {InvalidCredentialsError, UserAlreadyExistsError} from "@domain/errors";
+import {ApplicationError} from "@domain/errors";
 
 export function errorHandler(
     error: Error,
@@ -7,16 +7,17 @@ export function errorHandler(
     res: Response,
     next: NextFunction
 ): void {
-    if (error instanceof UserAlreadyExistsError) {
-        res.status(400).json({ message: error.message });
-        return;
-    }
-
-    if (error instanceof InvalidCredentialsError) {
-        res.status(401).json({ message: error.message });
+    if (error instanceof ApplicationError) {
+        res.status(error.status).json({
+            code: error.code,
+            message: error.message
+        });
         return;
     }
 
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({
+        code: 'SERVER_001',
+        message: 'Internal server error'
+    });
 }
