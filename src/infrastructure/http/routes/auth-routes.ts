@@ -4,8 +4,14 @@ import {loginSchema, refreshTokenSchema, registerSchema} from "@application/vali
 import {validate} from "../middleware/validate";
 import {authLimiter, standardLimiter} from "../middleware/rate-limit";
 import {authMiddleware} from "@infrastructure/http/middleware/auth-middleware";
+import {TokenBlacklistService} from "@domain/services/token-blacklist";
+import {TokenService} from "@application/services/token-service";
 
-export const authRouter = (authController: AuthController): Router => {
+export const authRouter = (
+    authController: AuthController,
+    tokenService: TokenService,
+    blacklistService: TokenBlacklistService
+    ): Router => {
     const router = Router();
 
     router.post('/register',

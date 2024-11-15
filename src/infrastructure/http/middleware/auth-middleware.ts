@@ -1,6 +1,7 @@
 import { TokenService } from "@application/services/token-service";
 import { TokenBlacklistService } from "@domain/services/token-blacklist";
 import { Request, Response, NextFunction } from 'express';
+import {InvalidTokenError, TokenExpiredError} from "@domain/errors";
 
 declare module 'express-serve-static-core' {
     interface Request {
@@ -22,14 +23,12 @@ export const authMiddleware = (
 
             const isBlacklisted = await blacklistService.isBlacklisted(token);
             if (isBlacklisted) {
-                res.status(401).json({ message: 'Token is invalid' });
-                return
+                throw new InvalidTokenError();
             }
 
             const userId = tokenService.verifyToken(token);
             if (!userId) {
-                res.status(401).json({ message: 'Invalid token' });
-                return
+                throw new TokenExpiredError();
             }
 
             req.userId = userId;
