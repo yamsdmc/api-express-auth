@@ -20,6 +20,8 @@ import {LogoutUseCase} from "@application/use-cases/auth/logout";
 import {InMemoryTokenBlacklist} from "@infrastructure/services/token-blacklist";
 import {RegisterUseCase} from "@application/use-cases/auth/register";
 import {LoginUseCase} from "@application/use-cases/auth/login";
+import {swaggerSpec} from "@infrastructure/http/swagger/swagger";
+import swaggerUi from 'swagger-ui-express';
 
 const app = express();
 
@@ -45,6 +47,8 @@ app.use('/api/auth', authRouter(authController, tokenService, blacklistService))
 app.use('/health', (_, res) => {
     res.send('OK');
 })
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 app.use('/api/protected', authMiddleware(tokenService, blacklistService), protectedRouter(tokenService));
 
