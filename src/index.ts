@@ -18,18 +18,21 @@ import {
     InMemoryRefreshTokenRepository
 } from "@infrastructure/repositories/in-memory/in-memory-refresh-token-repository";
 import {InMemoryUserRepository} from "@infrastructure/repositories/in-memory/in-memory-user-repository";
+import {LogoutUseCase} from "@application/use-cases/auth/logout";
+import {InMemoryTokenBlacklist} from "@infrastructure/services/token-blacklist";
 
 const app = express();
-
 
 const userRepository = new InMemoryUserRepository();
 const passwordService = new BcryptPasswordService();
 const tokenService = new JwtTokenService();
 const refreshTokenRepository = new InMemoryRefreshTokenRepository();
+const blacklistService = new InMemoryTokenBlacklist();
+const logoutUseCase = new LogoutUseCase(blacklistService, refreshTokenRepository);
 const registerUseCase = new RegisterUseCase(userRepository, passwordService, tokenService, refreshTokenRepository);
 const loginUseCase = new LoginUseCase(userRepository, passwordService, tokenService, refreshTokenRepository);
 const refreshTokenUseCase = new RefreshTokenUseCase(refreshTokenRepository, tokenService);
-const authController = new AuthController(registerUseCase, loginUseCase, refreshTokenUseCase);
+const authController = new AuthController(registerUseCase, loginUseCase, logoutUseCase, refreshTokenUseCase);
 
 
 app.use(helmet());
@@ -39,10 +42,11 @@ app.use(express.json());
 app.use(standardLimiter);
 
 app.use('/api/auth', authRouter(authController));
-app.use('/health', (req, res) => {
+app.use('/health', (_, res) => {
     res.send('OK');
 })
-app.use('/api/protected', authMiddleware(tokenService), protectedRouter(tokenService));
+
+app.use('/api/protected', authMiddleware(tokenService, blacklistService), protectedRouter(tokenService));
 
 app.use(errorHandler);
 
