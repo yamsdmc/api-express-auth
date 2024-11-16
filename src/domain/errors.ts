@@ -41,3 +41,9 @@ export class EmailNotVerifiedError extends ApplicationError {
         super('Email not verified', 'AUTH_005', 403);
     }
 }
+
+export class EmailAlreadyVerifiedError extends ApplicationError {
+    constructor() {
+        super('Email already verified', 'AUTH_006', 400);
+    }
+}

@@ -25,6 +25,7 @@ import {AuthController} from "@infrastructure/http/controllers/auth-controller";
 import {VerifyEmailUseCase} from "@application/use-cases/auth/verify-email";
 import {NodemailerService} from "@infrastructure/services/nodemailer-service";
 import {ConsoleEmailService} from "@infrastructure/services/console-email-service";
+import {ResendVerificationEmailUseCase} from "@application/use-cases/auth/resend-verification";
 
 export const createApp = () => {
     const app = express();
@@ -42,7 +43,8 @@ export const createApp = () => {
     const registerUseCase = new RegisterUseCase(userRepository, passwordService, tokenService, refreshTokenRepository, mailerService);
     const loginUseCase = new LoginUseCase(userRepository, passwordService, tokenService, refreshTokenRepository);
     const refreshTokenUseCase = new RefreshTokenUseCase(refreshTokenRepository, tokenService);
-    const authController = new AuthController(registerUseCase, loginUseCase, logoutUseCase, refreshTokenUseCase, verifyEmailUseCase);
+    const resendVerificationEmailUseCase = new ResendVerificationEmailUseCase(userRepository, mailerService);
+    const authController = new AuthController(registerUseCase, loginUseCase, logoutUseCase, refreshTokenUseCase, verifyEmailUseCase, resendVerificationEmailUseCase);
 
 
     app.use(helmet());

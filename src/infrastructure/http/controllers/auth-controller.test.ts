@@ -12,6 +12,8 @@ import {ConsoleEmailService} from "@infrastructure/services/console-email-servic
 import {VerifyEmailUseCase} from "@application/use-cases/auth/verify-email";
 import {LogoutUseCase} from "@application/use-cases/auth/logout";
 import {InMemoryTokenBlacklist} from "@infrastructure/services/token-blacklist";
+import {ResendVerificationEmailUseCase} from "@application/use-cases/auth/resend-verification";
+import {NodemailerService} from "@infrastructure/services/nodemailer-service";
 
 describe('AuthController', () => {
     let controller: AuthController;
@@ -31,7 +33,11 @@ describe('AuthController', () => {
         registerUseCase = new RegisterUseCase(userRepository, passwordService, tokenService, refreshTokenRepository, emailService);
         const loginUseCase = new LoginUseCase(userRepository, passwordService, tokenService, refreshTokenRepository);
         const logoutUseCase = new LogoutUseCase(blackListService, refreshTokenRepository);
-        controller = new AuthController(registerUseCase, loginUseCase, logoutUseCase, refreshTokenUseCase, verifyEmailUseCase);
+        const mailerService = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+            ? new ConsoleEmailService()
+            : new NodemailerService();
+        const resendVerificationEmailUseCase = new ResendVerificationEmailUseCase(userRepository, mailerService);
+        controller = new AuthController(registerUseCase, loginUseCase, logoutUseCase, refreshTokenUseCase, verifyEmailUseCase, resendVerificationEmailUseCase);
         mockResponse = {
             status: vi.fn().mockReturnThis(),
             json: vi.fn()

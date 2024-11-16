@@ -1,8 +1,7 @@
 import request from 'supertest';
-import {describe, it, expect} from 'vitest';
+import {describe, it, expect, beforeEach} from 'vitest';
 import {createApp} from "../app";
 import {Express} from "express";
-import * as console from "node:console";
 
 describe('Auth API', () => {
     const {app, userRepository} = createApp();
@@ -67,6 +66,63 @@ describe('Auth API', () => {
             accessToken = res.body.accessToken;
             refreshToken = res.body.refreshToken;
         });
+
+        describe('Resend Verification Email', () => {
+            beforeEach(async () => {
+                await userRepository.reset()
+                await insertUser(app, testUser);
+                const user = await userRepository.findByEmail(testUser.email);
+                verificationToken = user?.verificationToken!;
+            });
+            it('should resend verification email', async () => {
+                const res = await request(app)
+                    .post('/api/auth/resend-verification')
+                    .send({ email: testUser.email });
+
+                console.log('Resend Response:', res.body); // Pour déboguer
+
+                expect(res.status).toBe(200);
+                expect(res.body.message).toBe('Verification email sent');
+            });
+
+            it('should not resend if email is already verified', async () => {
+                const user = await userRepository.findByEmail(testUser.email);
+                await userRepository.update(user!.id!, { isVerified: true });
+
+                const res = await request(app)
+                    .post('/api/auth/resend-verification')
+                    .send({ email: testUser.email });
+
+                expect(res.status).toBe(400);
+                expect(res.body.message).toBe('Email already verified');
+            });
+            it('should return 400 with correct error when email already verified', async () => {
+                // Créer et vérifier un utilisateur
+                await insertUser(app, testUser);
+                const user = await userRepository.findByEmail(testUser.email);
+                await userRepository.update(user!.id!, { isVerified: true });
+
+                const res = await request(app)
+                    .post('/api/auth/resend-verification')
+                    .send({ email: testUser.email });
+
+                expect(res.status).toBe(400);
+                expect(res.body).toEqual({
+                    code: 'AUTH_006',
+                    message: 'Email already verified'
+                });
+            });
+
+            it('should return 404 when user not found', async () => {
+                const res = await request(app)
+                    .post('/api/auth/resend-verification')
+                    .send({ email: 'nonexistent@example.com' });
+
+                expect(res.status).toBe(404);
+                expect(res.body.message).toBe('User not found');
+            });
+        });
+
     });
 
     describe('Duplicate Registration', () => {

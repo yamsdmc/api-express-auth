@@ -3,7 +3,7 @@ import { AuthController } from '../controllers/auth-controller';
 import {
     loginSchema,
     refreshTokenSchema,
-    registerSchema,
+    registerSchema, resendVerificationSchema,
     verifyEmailSchema
 } from "@application/validators/auth-validator";
 import {validate} from "../middleware/validate";
@@ -195,6 +195,36 @@ export const authRouter = (
     router.post('/verify-email',
         validate(verifyEmailSchema),
         (req, res) => authController.verifyEmail(req, res)
+    );
+
+    /**
+     * @openapi
+     * /api/auth/resend-verification:
+     *   post:
+     *     tags:
+     *       - Auth
+     *     summary: Resend verification email
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *     responses:
+     *       200:
+     *         description: Verification email sent
+     *       400:
+     *         description: Email already verified
+     *       404:
+     *         description: User not found
+     */
+    router.post('/resend-verification',
+        validate(resendVerificationSchema),
+        (req, res) => authController.resendVerification(req, res)
     );
 
     return router;

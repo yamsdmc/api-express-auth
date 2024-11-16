@@ -4,8 +4,9 @@ import {LoginUseCase} from "@application/use-cases/auth/login";
 import {RefreshTokenUseCase} from "@application/use-cases/auth/refresh-token";
 import {LogoutUseCase} from "@application/use-cases/auth/logout";
 import {VerifyEmailUseCase} from "@application/use-cases/auth/verify-email";
-import {InvalidTokenError} from "@domain/errors";
+import {EmailAlreadyVerifiedError, InvalidCredentialsError, InvalidTokenError} from "@domain/errors";
 import * as console from "node:console";
+import {ResendVerificationEmailUseCase} from "@application/use-cases/auth/resend-verification";
 
 export class AuthController {
     constructor(
@@ -14,6 +15,7 @@ export class AuthController {
         private readonly logoutUseCase: LogoutUseCase,
         private readonly refreshTokenUseCase: RefreshTokenUseCase,
         private readonly verifyEmailUseCase: VerifyEmailUseCase,
+        private readonly resendVerificationEmailUseCase: ResendVerificationEmailUseCase
     ) {
     }
 
@@ -65,6 +67,26 @@ export class AuthController {
         } catch (error) {
             if (error instanceof InvalidTokenError) {
                 res.status(error.status || 400).json({ message: error.message });
+                return;
+            }
+            throw error;
+        }
+    }
+    async resendVerification(req: Request, res: Response): Promise<void> {
+        try {
+            const { email } = req.body;
+            await this.resendVerificationEmailUseCase.execute(email);
+            res.status(200).json({ message: 'Verification email sent' });
+        } catch (error) {
+            if (error instanceof EmailAlreadyVerifiedError) {
+                res.status(error.status).json({
+                    code: error.code,
+                    message: error.message
+                });
+                return;
+            }
+            if (error instanceof InvalidCredentialsError) {
+                res.status(404).json({ message: 'User not found' });
                 return;
             }
             throw error;

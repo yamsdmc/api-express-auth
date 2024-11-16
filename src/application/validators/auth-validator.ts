@@ -30,3 +30,9 @@ export const logoutSchema = z.object({
 export const verifyEmailSchema = z.object({
     token: z.string().uuid('Invalid verification token')
 });
+
+export const resendVerificationSchema = z.object({
+    email: z.string()
+        .email('Invalid email format')
+        .min(1, 'Email is required')
+});
