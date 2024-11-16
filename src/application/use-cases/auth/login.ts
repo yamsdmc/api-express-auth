@@ -21,10 +21,8 @@ export class LoginUseCase {
         if (!user) {
             throw new InvalidCredentialsError();
         }
-        console.log('User state:', user);
 
         if (!user.isVerified) {
-            console.log('je balance lerreur');
             throw new EmailNotVerifiedError();
         }
 

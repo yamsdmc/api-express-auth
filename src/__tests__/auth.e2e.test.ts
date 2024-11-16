@@ -57,13 +57,12 @@ describe('Auth API', () => {
         it('should login successfully after verification', async () => {
             await insertUser(app, testUser);
             const userRegistered = await userRepository.findByEmail(testUser.email);
-            console.log('userRegistered', userRegistered);
+
             await userRepository.update(userRegistered?.id!, {isVerified: true});
             const res = await request(app)
                 .post('/api/auth/login')
                 .send(testUser);
-            console.log('body', res.body);
-            console.log('status', res.status)
+
             expect(res.status).toBe(200);
             accessToken = res.body.accessToken;
             refreshToken = res.body.refreshToken;

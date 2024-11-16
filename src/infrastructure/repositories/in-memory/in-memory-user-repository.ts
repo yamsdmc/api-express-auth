@@ -23,7 +23,6 @@ export class InMemoryUserRepository implements UserRepository {
         if (index === -1) throw new Error('User not found');
 
         this.users[index] = { ...this.users[index], ...data };
-        console.log('updated user', this.users[index]);
         return this.users[index];
     }
 }

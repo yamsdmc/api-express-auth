@@ -5,10 +5,6 @@ export class ApplicationError extends Error {
     public readonly status: number;
 
     constructor(message: string, code: string, status: number) {
-        console.log('je suis dans le constructeur de ApplicationError');
-        console.log('message', message);
-        console.log('code', code);
-        console.log('status', status);
         super(message);
         this.name = this.constructor.name;
         this.code = code;
@@ -42,7 +38,6 @@ export class InvalidTokenError extends ApplicationError {
 
 export class EmailNotVerifiedError extends ApplicationError {
     constructor() {
-        console.log('je suis dans le constructeur de EmailNotVerifiedError');
         super('Email not verified', 'AUTH_005', 403);
     }
 }

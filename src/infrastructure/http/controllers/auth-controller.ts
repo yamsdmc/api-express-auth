@@ -33,7 +33,6 @@ export class AuthController {
             const result = await this.loginUseCase.execute(email, password);
             res.status(200).json(result);
         } catch (error: any) {
-            console.log('je suis dans le catch de login');
             res.status(error.status || 401).json({message: error.message});
         }
     }
