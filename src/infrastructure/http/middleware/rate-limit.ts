@@ -1,8 +1,9 @@
 import rateLimit from "express-rate-limit";
+import {CONFIG} from "../../../config";
 
 export const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // 5 tentatives
+    windowMs: CONFIG.RATE_LIMIT.LOGIN_WINDOW_MINUTES * 60 * 1000, // 15 minutes
+    max: process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development' ? 100 : CONFIG.RATE_LIMIT.LOGIN_MAX_ATTEMPTS,
     message: { message: 'Too many attempts, please try again later' }
 });
 

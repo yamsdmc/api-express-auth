@@ -26,3 +26,7 @@ export const refreshTokenSchema = z.object({
 export const logoutSchema = z.object({
     refreshToken: z.string().uuid('Invalid refresh token format')
 });
+
+export const verifyEmailSchema = z.object({
+    token: z.string().uuid('Invalid verification token')
+});

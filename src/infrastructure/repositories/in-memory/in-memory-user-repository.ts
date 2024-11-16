@@ -1,5 +1,6 @@
-import {UserRepository} from "../../../domain/repositories/user-repository.js";
-import {User} from "../../../domain/user.js";
+import {UserRepository} from "@domain/repositories/user-repository";
+import {User} from "@domain/user";
+import * as console from "node:console";
 
 export class InMemoryUserRepository implements UserRepository {
     private users: User[] = [];
@@ -8,8 +9,21 @@ export class InMemoryUserRepository implements UserRepository {
         return this.users.find(user => user.email === email) || null;
     }
 
+    async findByVerificationToken(token: string): Promise<User | null> {
+        return this.users.find(user => user.verificationToken === token) || null;
+    }
+
     async create(user: User): Promise<User> {
         this.users.push(user);
         return user;
+    }
+
+    async update(id: string, data: Partial<User>): Promise<User> {
+        const index = this.users.findIndex(user => user.id === id);
+        if (index === -1) throw new Error('User not found');
+
+        this.users[index] = { ...this.users[index], ...data };
+        console.log('updated user', this.users[index]);
+        return this.users[index];
     }
 }

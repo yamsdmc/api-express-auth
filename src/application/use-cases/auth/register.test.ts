@@ -4,6 +4,7 @@ import { InMemoryUserRepository } from "@infrastructure/repositories/in-memory/i
 import { BcryptPasswordService } from "@infrastructure/services/bcrypt-password-service";
 import { JwtTokenService } from "@infrastructure/services/jwt-token-service";
 import { InMemoryRefreshTokenRepository } from "@infrastructure/repositories/in-memory/in-memory-refresh-token-repository";
+import {ConsoleEmailService} from "@infrastructure/services/console-email-service";
 
 describe('RegisterUseCase', () => {
     let useCase: RegisterUseCase;
@@ -17,11 +18,13 @@ describe('RegisterUseCase', () => {
         passwordService = new BcryptPasswordService();
         tokenService = new JwtTokenService();
         refreshTokenRepository = new InMemoryRefreshTokenRepository();
+        const emailService = new ConsoleEmailService()
         useCase = new RegisterUseCase(
             userRepository,
             passwordService,
             tokenService,
-            refreshTokenRepository
+            refreshTokenRepository,
+            emailService
         );
     });
 

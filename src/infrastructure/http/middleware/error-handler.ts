@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import {ApplicationError} from "@domain/errors";
+import * as console from "node:console";
 
 export function errorHandler(
     error: Error,
@@ -8,12 +9,14 @@ export function errorHandler(
     next: NextFunction
 ): void {
     if (error instanceof ApplicationError) {
+        console.log('je suis dans le if de errorHandler');
         res.status(error.status).json({
             code: error.code,
             message: error.message
         });
         return;
     }
+    console.log('je suis dans le else de errorHandler');
 
     console.error(error);
     res.status(500).json({

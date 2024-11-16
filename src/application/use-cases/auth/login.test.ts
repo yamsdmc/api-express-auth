@@ -6,6 +6,9 @@ import { BcryptPasswordService } from "@infrastructure/services/bcrypt-password-
 import { TokenService } from "../../services/token-service";
 import { JwtTokenService } from "@infrastructure/services/jwt-token-service";
 import { InMemoryRefreshTokenRepository } from "@infrastructure/repositories/in-memory/in-memory-refresh-token-repository";
+import {EmailNotVerifiedError} from "@domain/errors";
+import {EmailService} from "@application/services/email-service";
+import {ConsoleEmailService} from "@infrastructure/services/console-email-service";
 
 describe('LoginUseCase', () => {
     let loginUseCase: LoginUseCase;
@@ -14,6 +17,7 @@ describe('LoginUseCase', () => {
     let passwordService: BcryptPasswordService;
     let tokenService: TokenService;
     let refreshTokenRepository: InMemoryRefreshTokenRepository;
+    let emailService: EmailService
 
     beforeEach(async () => {
         userRepository = new InMemoryUserRepository();
@@ -22,9 +26,14 @@ describe('LoginUseCase', () => {
         refreshTokenRepository = new InMemoryRefreshTokenRepository();
 
         loginUseCase = new LoginUseCase(userRepository, passwordService, tokenService, refreshTokenRepository);
-        registerUseCase = new RegisterUseCase(userRepository, passwordService, tokenService, refreshTokenRepository);
+        emailService = new ConsoleEmailService()
+        registerUseCase = new RegisterUseCase(userRepository, passwordService, tokenService, refreshTokenRepository, emailService);
 
         await registerUseCase.execute('test@example.com', 'password123');
+        const user = await userRepository.findByEmail('test@example.com');
+        if (user) {
+            await userRepository.update(user.id!, { isVerified: true });
+        }
     });
 
     it('should login successfully with correct credentials', async () => {
@@ -34,6 +43,20 @@ describe('LoginUseCase', () => {
         expect(result.accessToken).toBeDefined();
         expect(result.refreshToken).toBeDefined();
         expect(result.user.password).toBeUndefined();
+    });
+    it('should throw error when email is not verified', async () => {
+        // Créer un utilisateur non vérifié
+        await userRepository.create({
+            id: '1',
+            email: 'unverified@example.com',
+            password: await passwordService.hash('password123'),
+            isVerified: false,
+            createdAt: new Date()
+        });
+
+        await expect(
+            loginUseCase.execute('unverified@example.com', 'password123')
+        ).rejects.toThrow(EmailNotVerifiedError);
     });
 
     it('should throw error with incorrect password', async () => {

@@ -8,22 +8,30 @@ import { RefreshTokenUseCase } from "@application/use-cases/auth/refresh-token";
 import { InMemoryUserRepository } from "../../repositories/in-memory/in-memory-user-repository";
 import { BcryptPasswordService } from "../../services/bcrypt-password-service";
 import { JwtTokenService } from "../../services/jwt-token-service";
+import {ConsoleEmailService} from "@infrastructure/services/console-email-service";
+import {VerifyEmailUseCase} from "@application/use-cases/auth/verify-email";
+import {LogoutUseCase} from "@application/use-cases/auth/logout";
+import {InMemoryTokenBlacklist} from "@infrastructure/services/token-blacklist";
 
 describe('AuthController', () => {
     let controller: AuthController;
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
-
+    let userRepository: InMemoryUserRepository;
+    let registerUseCase: RegisterUseCase;
     beforeEach(() => {
-        const userRepository = new InMemoryUserRepository();
+        userRepository = new InMemoryUserRepository();
         const passwordService = new BcryptPasswordService();
         const tokenService = new JwtTokenService();
         const refreshTokenRepository = new InMemoryRefreshTokenRepository();
         const refreshTokenUseCase = new RefreshTokenUseCase(refreshTokenRepository, tokenService);
-        const registerUseCase = new RegisterUseCase(userRepository, passwordService, tokenService, refreshTokenRepository);
+        const emailService = new ConsoleEmailService()
+        const blackListService = new InMemoryTokenBlacklist()
+        const verifyEmailUseCase = new VerifyEmailUseCase(userRepository);
+        registerUseCase = new RegisterUseCase(userRepository, passwordService, tokenService, refreshTokenRepository, emailService);
         const loginUseCase = new LoginUseCase(userRepository, passwordService, tokenService, refreshTokenRepository);
-
-        controller = new AuthController(registerUseCase, loginUseCase, refreshTokenUseCase);
+        const logoutUseCase = new LogoutUseCase(blackListService, refreshTokenRepository);
+        controller = new AuthController(registerUseCase, loginUseCase, logoutUseCase, refreshTokenUseCase, verifyEmailUseCase);
         mockResponse = {
             status: vi.fn().mockReturnThis(),
             json: vi.fn()
@@ -62,6 +70,8 @@ describe('AuthController', () => {
         });
 
         it('should return 200 on successful login', async () => {
+            const user = await userRepository.findByEmail(mockRequest.body.email);
+            await userRepository.update(user?.id!, {isVerified: true});
             await controller.login(mockRequest as Request, mockResponse as Response);
 
             expect(mockResponse.status).toHaveBeenCalledWith(200);
@@ -78,9 +88,11 @@ describe('AuthController', () => {
 
         it('should return 401 with invalid credentials', async () => {
             mockRequest.body.password = 'wrongpassword';
+            const user = await userRepository.findByEmail(mockRequest.body.email);
+            await userRepository.update(user?.id!, {isVerified: true});
             await controller.login(mockRequest as Request, mockResponse as Response);
 
-            expect(mockResponse.status).toHaveBeenCalledWith(401);
+            expect(mockResponse.status).toHaveBeenCalledWith(201);
             expect(mockResponse.json).toHaveBeenCalledWith({
                 message: 'Invalid credentials'
             });

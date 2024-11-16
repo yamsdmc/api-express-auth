@@ -1,6 +1,11 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth-controller';
-import {loginSchema, refreshTokenSchema, registerSchema} from "@application/validators/auth-validator";
+import {
+    loginSchema,
+    refreshTokenSchema,
+    registerSchema,
+    verifyEmailSchema
+} from "@application/validators/auth-validator";
 import {validate} from "../middleware/validate";
 import {authLimiter, standardLimiter} from "../middleware/rate-limit";
 import {authMiddleware} from "@infrastructure/http/middleware/auth-middleware";
@@ -73,6 +78,12 @@ export const authRouter = (
      *           application/json:
      *             schema:
      *               $ref: '#/components/schemas/Error'
+     *       403:
+     *          description: Email not verified
+     *          content:
+     *            application/json:
+     *              schema:
+     *                $ref: '#/components/schemas/Error'
      */
     router.post('/login',
         authLimiter,
@@ -150,5 +161,41 @@ export const authRouter = (
         const token = req.header('Authorization')?.replace('Bearer ', '');
         await authController.logout(req, res);
     });
+
+    /**
+     * @openapi
+     * /api/auth/verify-email:
+     *   post:
+     *     tags:
+     *       - Auth
+     *     summary: Verify user email
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               token:
+     *                 type: string
+     *                 format: uuid
+     *     responses:
+     *       200:
+     *         description: Email verified successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 message:
+     *                   type: string
+     *       400:
+     *         $ref: '#/components/responses/ErrorResponse'
+     */
+    router.post('/verify-email',
+        validate(verifyEmailSchema),
+        (req, res) => authController.verifyEmail(req, res)
+    );
+
     return router;
 };

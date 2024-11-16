@@ -1,10 +1,11 @@
 import {UserRepository} from "@domain/repositories/user-repository";
 import {PasswordService} from "../../services/password-service.js";
 import {AuthPayload} from "@domain/auth";
-import {InvalidCredentialsError} from "@domain/errors";
+import {EmailNotVerifiedError, InvalidCredentialsError} from "@domain/errors";
 import {TokenService} from "../../services/token-service";
 import {RefreshTokenRepository} from "@domain/repositories/refresh-token-repository";
-import {JWT_CONFIG} from "../../../config";
+import {CONFIG} from "../../../config";
+import * as console from "node:console";
 
 export class LoginUseCase {
     constructor(
@@ -16,9 +17,17 @@ export class LoginUseCase {
 
     async execute(email: string, password: string): Promise<AuthPayload> {
         const user = await this.userRepository.findByEmail(email);
+
         if (!user) {
             throw new InvalidCredentialsError();
         }
+        console.log('User state:', user);
+
+        if (!user.isVerified) {
+            console.log('je balance lerreur');
+            throw new EmailNotVerifiedError();
+        }
+
 
         const isPasswordValid = await this.passwordService.compare(
             password,
@@ -30,7 +39,7 @@ export class LoginUseCase {
 
         const accessToken = this.tokenService.generateToken(user.id!);
         const refreshToken = crypto.randomUUID();
-        const expiresAt = new Date(Date.now() + JWT_CONFIG.REFRESH_TOKEN_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
+        const expiresAt = new Date(Date.now() + CONFIG.JWT.REFRESH_TOKEN_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
         await this.refreshTokenRepository.save(user.id!, refreshToken, expiresAt);
 
         return {
@@ -39,6 +48,7 @@ export class LoginUseCase {
             user: {
                 id: user.id!,
                 email: user.email,
+                isVerified: user.isVerified,
                 createdAt: user.createdAt
             }
         };
