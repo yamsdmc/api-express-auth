@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth-controller';
 import {
+    deleteAccountSchema,
     loginSchema,
     refreshTokenSchema,
     registerSchema, resendVerificationSchema,
@@ -225,6 +226,62 @@ export const authRouter = (
     router.post('/resend-verification',
         validate(resendVerificationSchema),
         (req, res) => authController.resendVerification(req, res)
+    );
+
+    /**
+     * @openapi
+     * /api/auth/me:
+     *   get:
+     *     tags:
+     *       - Auth
+     *     security:
+     *       - bearerAuth: []
+     *     summary: Get current user information
+     *     responses:
+     *       200:
+     *         description: User information
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/User'
+     *       401:
+     *         $ref: '#/components/responses/UnauthorizedError'
+     */
+    router.get('/me',
+        authMiddleware(tokenService, blacklistService),
+        async (req, res, next) => authController.getMe(req, res, next)
+    );
+
+    /**
+     * @openapi
+     * /api/auth/delete-account:
+     *   delete:
+     *     tags:
+     *       - Auth
+     *     security:
+     *       - bearerAuth: []
+     *     summary: Delete user account
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               password:
+     *                 type: string
+     *     responses:
+     *       200:
+     *         description: Account deleted successfully
+     *       401:
+     *         $ref: '#/components/responses/UnauthorizedError'
+     *       400:
+     *         description: Invalid password
+     */
+    router.delete('/delete-account',
+        validate(deleteAccountSchema),
+        authMiddleware(tokenService, blacklistService),
+        (req, res, next) => authController.deleteAccount(req, res, next)
     );
 
     return router;

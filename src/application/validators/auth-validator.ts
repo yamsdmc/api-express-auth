@@ -36,3 +36,7 @@ export const resendVerificationSchema = z.object({
         .email('Invalid email format')
         .min(1, 'Email is required')
 });
+
+export const deleteAccountSchema = z.object({
+    password: z.string().min(1, 'Password is required')
+});

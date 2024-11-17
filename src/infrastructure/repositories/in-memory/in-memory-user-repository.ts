@@ -28,4 +28,13 @@ export class InMemoryUserRepository implements UserRepository {
         this.users[index] = { ...this.users[index], ...data };
         return this.users[index];
     }
+
+    async findById(id: string): Promise<User | null> {
+        return this.users.find(user => user.id === id) || null;
+    }
+    async delete(id: string): Promise<void> {
+        const index = this.users.findIndex(user => user.id === id);
+        if (index === -1) throw new Error('User not found');
+        this.users.splice(index, 1);
+    }
 }

@@ -1,12 +1,13 @@
-import {Request, Response} from 'express';
+import {NextFunction, Request, Response} from 'express';
 import {RegisterUseCase} from "@application/use-cases/auth/register";
 import {LoginUseCase} from "@application/use-cases/auth/login";
 import {RefreshTokenUseCase} from "@application/use-cases/auth/refresh-token";
 import {LogoutUseCase} from "@application/use-cases/auth/logout";
 import {VerifyEmailUseCase} from "@application/use-cases/auth/verify-email";
 import {EmailAlreadyVerifiedError, InvalidCredentialsError, InvalidTokenError} from "@domain/errors";
-import * as console from "node:console";
 import {ResendVerificationEmailUseCase} from "@application/use-cases/auth/resend-verification";
+import {GetMeUseCase} from "@application/use-cases/auth/get-me";
+import {DeleteAccountUseCase} from "@application/use-cases/auth/delete-account";
 
 export class AuthController {
     constructor(
@@ -15,7 +16,9 @@ export class AuthController {
         private readonly logoutUseCase: LogoutUseCase,
         private readonly refreshTokenUseCase: RefreshTokenUseCase,
         private readonly verifyEmailUseCase: VerifyEmailUseCase,
-        private readonly resendVerificationEmailUseCase: ResendVerificationEmailUseCase
+        private readonly resendVerificationEmailUseCase: ResendVerificationEmailUseCase,
+        private readonly getMeUseCase: GetMeUseCase,
+        private readonly deleteAccountUseCase: DeleteAccountUseCase
     ) {
     }
 
@@ -90,6 +93,25 @@ export class AuthController {
                 return;
             }
             throw error;
+        }
+    }
+
+    async getMe(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const user = await this.getMeUseCase.execute(req.userId);
+            res.json(user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async deleteAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { password } = req.body;
+            await this.deleteAccountUseCase.execute(req.userId, password);
+            res.status(200).json({ message: 'Account deleted successfully' });
+        } catch (error) {
+            next(error);
         }
     }
 }
