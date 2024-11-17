@@ -35,7 +35,7 @@ describe("RegisterUseCase", () => {
     expect(result.accessToken).toBeDefined();
     expect(result.refreshToken).toBeDefined();
     expect(result.user.id).toBeDefined();
-    expect(result.user.password).toBeUndefined();
+    expect(result.user).not.toHaveProperty("password");
   });
 
   it("should throw error if email already exists", async () => {

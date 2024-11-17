@@ -306,5 +306,5 @@ describe("Auth API", () => {
   });
 });
 
-const insertUser = async (app: Express, user) =>
+const insertUser = async (app: Express, user: { email: string, password: string }) =>
   await request(app).post("/api/auth/register").send(user);

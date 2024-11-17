@@ -56,7 +56,7 @@ describe("LoginUseCase", () => {
     expect(result.user.email).toBe("test@example.com");
     expect(result.accessToken).toBeDefined();
     expect(result.refreshToken).toBeDefined();
-    expect(result.user.password).toBeUndefined();
+    expect(result.user).not.toHaveProperty("password");
   });
   it("should throw error when email is not verified", async () => {
     // Créer un utilisateur non vérifié

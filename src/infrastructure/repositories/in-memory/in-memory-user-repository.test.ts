@@ -12,6 +12,7 @@ describe("InMemoryUserRepository", () => {
       id: "1",
       email: "test@example.com",
       password: "password123",
+      isVerified: false,
       createdAt: new Date(),
     };
   });
