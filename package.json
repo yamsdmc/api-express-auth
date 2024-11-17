@@ -2,11 +2,13 @@
   "name": "xpatmart_api",
   "version": "1.0.0",
   "main": "./src/index.ts",
+  "type": "module",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only --require tsconfig-paths/register src/index.ts",
     "build": "tsc",
     "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "format": "prettier --write ."
   },
   "author": "Gherbi Yamin",
   "license": "ISC",
@@ -20,10 +22,7 @@
     "@types/supertest": "^6.0.2",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.7",
-    "i": "^0.3.7",
-    "npm": "^10.9.0",
     "prettier": "^3.3.3",
-    "prettier-plugin-tailwindcss": "^0.6.8",
     "supertest": "^7.0.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",

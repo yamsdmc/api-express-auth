@@ -1,0 +1,35 @@
+# Ignorer les dossiers Node.js standard
+node_modules/
+dist/
+
+# Ignorer les fichiers journaux
+*.log
+
+# Ignorer le fichier de lock de package
+package-lock.json
+
+# Ignorer les fichiers d'environnement et de configuration
+.env
+.gitignore
+*.config.js
+
+# Ignorer les fichiers TypeScript et JS spécifiques à la compilation
+*.d.ts
+*.js.map
+*.tsbuildinfo
+
+# Ignorer les répertoires de build et de sortie
+build/
+out/
+
+# Ignorer les répertoires de configuration des éditeurs
+.vscode/
+.idea/
+
+# Ignorer les fichiers système ou temporaires
+.DS_Store
+*.swp
+*.swo
+.tmp/
+.temp/
+.cache/

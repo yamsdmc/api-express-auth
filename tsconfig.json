@@ -1,16 +1,17 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
     "lib": ["ES2020"],
-    "baseUrl": ".", // Point de départ pour les chemins relatifs
+    "baseUrl": ".",
     "paths": {
       "@application/*": ["src/application/*"],
       "@domain/*": ["src/domain/*"],

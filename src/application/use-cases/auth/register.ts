@@ -1,11 +1,11 @@
-import {UserRepository} from "@domain/repositories/user-repository";
-import {PasswordService} from "../../services/password-service.js";
-import {TokenService} from "../../services/token-service.js";
-import {AuthPayload} from "@domain/auth";
-import {UserAlreadyExistsError} from "@domain/errors";
-import {RefreshTokenRepository} from "@domain/repositories/refresh-token-repository";
-import {CONFIG} from "../../../config";
-import {EmailService} from "@application/services/email-service";
+import { UserRepository } from "@domain/repositories/user-repository";
+import { PasswordService } from "../../services/password-service.js";
+import { TokenService } from "../../services/token-service.js";
+import { AuthPayload } from "@domain/auth";
+import { UserAlreadyExistsError } from "@domain/errors";
+import { RefreshTokenRepository } from "@domain/repositories/refresh-token-repository";
+import { CONFIG } from "../../../config";
+import { EmailService } from "@application/services/email-service";
 
 export class RegisterUseCase {
   constructor(
@@ -17,12 +17,12 @@ export class RegisterUseCase {
   ) {}
 
   async execute(email: string, password: string): Promise<AuthPayload> {
-    const existingUser = await this.userRepository.findByEmail(email)
+    const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       throw new UserAlreadyExistsError();
     }
 
-    const hashedPassword = await this.passwordService.hash(password)
+    const hashedPassword = await this.passwordService.hash(password);
     const verificationToken = crypto.randomUUID();
 
     const user = await this.userRepository.create({
@@ -31,16 +31,17 @@ export class RegisterUseCase {
       password: hashedPassword,
       isVerified: false,
       verificationToken,
-      createdAt: new Date()
-    })
+      createdAt: new Date(),
+    });
 
     await this.emailService.sendVerificationEmail(email, verificationToken);
 
     const accessToken = this.tokenService.generateToken(user.id!);
     const refreshToken = crypto.randomUUID();
-    const expiresAt = new Date(Date.now() + CONFIG.JWT.REFRESH_TOKEN_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(
+      Date.now() + CONFIG.JWT.REFRESH_TOKEN_EXPIRY_DAYS * 24 * 60 * 60 * 1000
+    );
     await this.refreshTokenRepository.save(user.id!, refreshToken, expiresAt);
-
 
     return {
       accessToken,
@@ -49,8 +50,8 @@ export class RegisterUseCase {
         id: user.id!,
         email: user.email,
         isVerified: user.isVerified,
-        createdAt: user.createdAt
-      }
+        createdAt: user.createdAt,
+      },
     };
   }
 }
