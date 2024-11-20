@@ -5,7 +5,6 @@ import { EmailNotVerifiedError, InvalidCredentialsError } from "@domain/errors";
 import { TokenService } from "../../services/token-service";
 import { RefreshTokenRepository } from "@domain/repositories/refresh-token-repository";
 import { CONFIG } from "../../../config";
-import * as console from "node:console";
 
 export class LoginUseCase {
   constructor(
@@ -17,7 +16,7 @@ export class LoginUseCase {
 
   async execute(email: string, password: string): Promise<AuthPayload> {
     const user = await this.userRepository.findByEmail(email);
-
+    console.log({ user });
     if (!user) {
       throw new InvalidCredentialsError();
     }

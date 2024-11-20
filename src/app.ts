@@ -6,7 +6,6 @@ import { InMemoryRefreshTokenRepository } from "@infrastructure/repositories/in-
 import { InMemoryTokenBlacklist } from "@infrastructure/services/token-blacklist";
 import helmet from "helmet";
 import cors from "cors";
-import { corsOptions } from "@infrastructure/http/middleware/security";
 import morgan from "morgan";
 import { standardLimiter } from "@infrastructure/http/middleware/rate-limit";
 import { authRouter } from "@infrastructure/http/routes/auth-routes";
@@ -26,10 +25,20 @@ import { ConsoleEmailService } from "@infrastructure/services/console-email-serv
 import { ResendVerificationEmailUseCase } from "@application/use-cases/auth/resend-verification";
 import { GetMeUseCase } from "@application/use-cases/auth/get-me";
 import { DeleteAccountUseCase } from "@application/use-cases/auth/delete-account";
+import { productListingRouter } from "@infrastructure/http/routes/product-listing-routes";
+import { ProductListingController } from "@infrastructure/http/controllers/product-listing-controller";
+import { TokenService } from "@application/services/token-service";
+import { TokenBlacklistService } from "@domain/services/token-blacklist";
+import { CreateProductListingUseCase } from "@application/use-cases/product-listing/create-product-listing";
+import { GetSellerListingsUseCase } from "@application/use-cases/product-listing/get-seller-listings";
+import { UpdateProductListingUseCase } from "@application/use-cases/product-listing/update-product-listing";
+import { DeleteProductListingUseCase } from "@application/use-cases/product-listing/delete-product-listing";
+import { InMemoryProductListingRepository } from "@infrastructure/repositories/in-memory/in-memory-product-listing-repository";
 
 export const createApp = () => {
   const app = express();
 
+  console.log("process.env.NODE_ENV ", process.env.NODE_ENV);
   const userRepository = new InMemoryUserRepository();
   const passwordService = new BcryptPasswordService();
   const tokenService = new JwtTokenService();
@@ -82,7 +91,8 @@ export const createApp = () => {
   );
 
   app.use(helmet());
-  app.use(cors(corsOptions));
+  // app.use(cors(corsOptions));
+  app.use(cors());
   app.use(morgan("dev"));
   app.use(express.json());
   app.use(standardLimiter);
@@ -91,6 +101,35 @@ export const createApp = () => {
     "/api/auth",
     authRouter(authController, tokenService, blacklistService)
   );
+
+  const productListingRepository = new InMemoryProductListingRepository();
+  const createProductListingUseCase = new CreateProductListingUseCase(
+    productListingRepository
+  );
+  const getSellerListingsUseCase = new GetSellerListingsUseCase(
+    productListingRepository
+  );
+  const updateProductListingUseCase = new UpdateProductListingUseCase(
+    productListingRepository
+  );
+  const deleteProductListingUseCase = new DeleteProductListingUseCase(
+    productListingRepository
+  );
+  const productListingController = new ProductListingController(
+    createProductListingUseCase,
+    getSellerListingsUseCase,
+    updateProductListingUseCase,
+    deleteProductListingUseCase
+  );
+  app.use(
+    "/api/listings",
+    productListingRouter(
+      productListingController,
+      tokenService,
+      blacklistService
+    )
+  );
+
   app.use("/health", (_, res) => {
     res.send("OK");
   });

@@ -26,11 +26,14 @@ export class AuthController {
   ) {}
 
   async register(req: Request, res: Response): Promise<void> {
+    console.log("AuthController -> register");
     try {
       const { email, password } = req.body;
+      console.log({ email, password });
       const result = await this.registerUseCase.execute(email, password);
       res.status(201).json(result);
     } catch (error: any) {
+      console.log("AuthController -> register (error)", { error });
       res.status(error.status || 400).json({ message: error.message });
     }
   }

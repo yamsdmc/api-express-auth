@@ -8,6 +8,7 @@ export function errorHandler(
   res: Response,
   next: NextFunction
 ): void {
+  console.error("error", error);
   if (error instanceof ApplicationError) {
     res.status(error.status).json({
       code: error.code,
@@ -16,7 +17,6 @@ export function errorHandler(
     return;
   }
 
-  console.error(error);
   res.status(500).json({
     code: "SERVER_001",
     message: "Internal server error",

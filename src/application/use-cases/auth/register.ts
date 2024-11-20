@@ -18,12 +18,15 @@ export class RegisterUseCase {
 
   async execute(email: string, password: string): Promise<AuthPayload> {
     const existingUser = await this.userRepository.findByEmail(email);
+    console.log({ existingUser });
     if (existingUser) {
       throw new UserAlreadyExistsError();
     }
 
     const hashedPassword = await this.passwordService.hash(password);
+    console.log({ hashedPassword });
     const verificationToken = crypto.randomUUID();
+    console.log({ verificationToken });
 
     const user = await this.userRepository.create({
       id: crypto.randomUUID(),
@@ -33,6 +36,7 @@ export class RegisterUseCase {
       verificationToken,
       createdAt: new Date(),
     });
+    console.log({ user });
 
     await this.emailService.sendVerificationEmail(email, verificationToken);
 

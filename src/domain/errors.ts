@@ -47,3 +47,60 @@ export class EmailAlreadyVerifiedError extends ApplicationError {
     super("Email already verified", "AUTH_006", 400);
   }
 }
+
+export class ListingError extends ApplicationError {
+  constructor(message: string, code: string, status = 400) {
+    super(message, code, status);
+  }
+}
+
+export class ListingNotFoundError extends ListingError {
+  constructor() {
+    super("Listing not found", "LISTING_001", 404);
+  }
+}
+
+export class UnauthorizedListingAccessError extends ListingError {
+  constructor() {
+    super(
+      "Unauthorized: listing does not belong to seller",
+      "LISTING_002",
+      403
+    );
+  }
+}
+
+export class InvalidListingDataError extends ListingError {
+  constructor(message: string) {
+    super(message, "LISTING_003", 400);
+  }
+}
+
+export class InvalidPriceError extends ListingError {
+  constructor(message: string) {
+    super(message, "LISTING_PRICE_001", 400);
+  }
+}
+
+export class InvalidImagesError extends ListingError {
+  constructor(message: string) {
+    super(message, "LISTING_IMAGES_001", 400);
+  }
+}
+
+export class InvalidTitleError extends ListingError {
+  constructor(message: string) {
+    super(message, "LISTING_TITLE_001", 400);
+  }
+}
+export class InvalidDescriptionError extends ListingError {
+  constructor(message: string) {
+    super(message, "LISTING_DESCRIPTION_001", 400);
+  }
+}
+
+export class InvalidCategoryError extends ListingError {
+  constructor(message: string) {
+    super(message, "LISTING_CATEGORY_001", 400);
+  }
+}
