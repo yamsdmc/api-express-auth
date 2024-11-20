@@ -34,6 +34,7 @@ import { GetSellerListingsUseCase } from "@application/use-cases/product-listing
 import { UpdateProductListingUseCase } from "@application/use-cases/product-listing/update-product-listing";
 import { DeleteProductListingUseCase } from "@application/use-cases/product-listing/delete-product-listing";
 import { InMemoryProductListingRepository } from "@infrastructure/repositories/in-memory/in-memory-product-listing-repository";
+import { GetListingByIdUseCase } from "@application/use-cases/product-listing/get-listing-by-id";
 
 export const createApp = () => {
   const app = express();
@@ -115,11 +116,15 @@ export const createApp = () => {
   const deleteProductListingUseCase = new DeleteProductListingUseCase(
     productListingRepository
   );
+  const getListingByIdUseCase = new GetListingByIdUseCase(
+    productListingRepository
+  );
   const productListingController = new ProductListingController(
     createProductListingUseCase,
     getSellerListingsUseCase,
     updateProductListingUseCase,
-    deleteProductListingUseCase
+    deleteProductListingUseCase,
+    getListingByIdUseCase
   );
   app.use(
     "/api/listings",
