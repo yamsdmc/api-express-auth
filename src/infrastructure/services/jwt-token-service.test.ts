@@ -49,7 +49,6 @@ describe("JwtTokenService", () => {
     });
 
     it("should return null for expired token", () => {
-      // Mock le temps pour créer un token expiré
       const realDateNow = Date.now.bind(global.Date);
       const currentTime = Date.now();
 
@@ -59,7 +58,6 @@ describe("JwtTokenService", () => {
 
       const expiredToken = jwtService.generateToken(testUserId);
 
-      // Restaure le temps réel
       global.Date.now = realDateNow;
 
       const result = jwtService.verifyToken(expiredToken);

@@ -95,7 +95,6 @@ describe("Auth API", () => {
         expect(res.body.message).toBe("Email already verified");
       });
       it("should return 400 with correct error when email already verified", async () => {
-        // Créer et vérifier un utilisateur
         await insertUser(app, testUser);
         const user = await userRepository.findByEmail(testUser.email);
         await userRepository.update(user!.id!, { isVerified: true });
@@ -233,7 +232,6 @@ describe("Auth API", () => {
     });
 
     it("should delete account with correct password", async () => {
-      // Créer et connecter un utilisateur
       await insertUser(app, testUser);
       const userFounded = await userRepository.findByEmail(testUser.email);
       await userRepository.update(userFounded!.id!, { isVerified: true });
@@ -244,17 +242,12 @@ describe("Auth API", () => {
 
       const accessToken = loginRes.body.accessToken;
 
-      // Supprimer le compte
       const res = await request(app)
         .delete("/api/auth/delete-account")
         .set("Authorization", `Bearer ${accessToken}`)
         .send({ password: testUser.password });
       console.log(res.body);
 
-      // expect(res.status).toBe(200);
-      // expect(res.body.message).toBe('Account deleted successfully');
-
-      // Vérifier que l'utilisateur n'existe plus
       const user = await userRepository.findByEmail(testUser.email);
       expect(user).toBeNull();
     });

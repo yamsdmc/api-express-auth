@@ -59,7 +59,6 @@ describe("LoginUseCase", () => {
     expect(result.user).not.toHaveProperty("password");
   });
   it("should throw error when email is not verified", async () => {
-    // Créer un utilisateur non vérifié
     await userRepository.create({
       id: "1",
       email: "unverified@example.com",

@@ -80,7 +80,6 @@ describe("InMemoryProductListingRepository", () => {
 
       expect(updated.product.price).toBe(600);
       expect(updated.updatedAt).not.toBe(created.updatedAt);
-      // Vérifier que les autres champs n'ont pas changé
       expect(updated.product.title).toBe(mockProduct.title);
     });
   });

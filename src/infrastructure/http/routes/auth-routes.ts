@@ -63,8 +63,6 @@ export const authRouter = (
     (req, res) => authController.register(req, res)
   );
 
-  // router.post("/register", authLimiter, validate(registerSchema), (req, res) => authController.register(req, res));
-
   /**
    * @openapi
    * /api/auth/login:
