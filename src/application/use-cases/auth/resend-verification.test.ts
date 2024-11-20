@@ -19,7 +19,6 @@ describe("ResendVerificationEmailUseCase", () => {
   });
 
   it("should generate new verification token and send email", async () => {
-    // Créer un utilisateur non vérifié
     const user = await userRepository.create({
       id: "1",
       email: "test@example.com",
@@ -37,7 +36,6 @@ describe("ResendVerificationEmailUseCase", () => {
   });
 
   it("should throw EmailAlreadyVerifiedError if user is verified", async () => {
-    // Créer un utilisateur vérifié
     await userRepository.create({
       id: "1",
       email: "test@example.com",
