@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { ProductListingController } from "../controllers/product-listing-controller";
 import { authMiddleware } from "../middleware/auth-middleware";
-import { validate } from "../middleware/validate";
 import { TokenService } from "@application/services/token-service";
 import { TokenBlacklistService } from "@domain/services/token-blacklist";
 
@@ -12,6 +11,11 @@ export const productListingRouter = (
 ): Router => {
   const router = Router();
   const auth = authMiddleware(tokenService, blacklistService);
+
+  router.get('/', async (req, res, next) => {
+    console.log('Hello World -----');
+    await controller.getListings(req, res, next);
+  });
 
   /**
    * @openapi

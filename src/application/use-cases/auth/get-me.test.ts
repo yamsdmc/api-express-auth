@@ -13,6 +13,8 @@ describe("GetMeUseCase", () => {
     password: "hashedPassword",
     isVerified: true,
     createdAt: new Date(),
+    firstname: "Test",
+    lastname: "User",
   };
 
   beforeEach(async () => {
@@ -29,6 +31,8 @@ describe("GetMeUseCase", () => {
       email: testUser.email,
       isVerified: testUser.isVerified,
       createdAt: testUser.createdAt,
+        firstname: testUser.firstname,
+        lastname: testUser.lastname,
     });
     expect(result).not.toHaveProperty("password");
   });

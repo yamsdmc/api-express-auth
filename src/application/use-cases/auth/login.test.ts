@@ -65,6 +65,8 @@ describe("LoginUseCase", () => {
       password: await passwordService.hash("password123"),
       isVerified: false,
       createdAt: new Date(),
+        firstname: "Test",
+        lastname: "User",
     });
 
     await expect(

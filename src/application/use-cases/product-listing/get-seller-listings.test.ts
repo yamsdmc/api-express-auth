@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { GetSellerListingsUseCase } from "@application/use-cases/product-listing/get-seller-listings";
 import { InMemoryProductListingRepository } from "@infrastructure/repositories/in-memory/in-memory-product-listing-repository";
-import { ProductEntity } from "@domain/entities/Product";
-import { ProductCondition } from "@domain/value-concepts/ProductCondition";
+import { createValidProduct, createValidProductListing } from "./factories/productListing.factory";
 
 describe("GetSellerListingsUseCase", () => {
   let useCase: GetSellerListingsUseCase;
@@ -10,29 +9,29 @@ describe("GetSellerListingsUseCase", () => {
   const sellerId = "seller-123";
   const otherSellerId = "seller-456";
 
-  const createMockProduct = (title: string): ProductEntity => ({
-    title,
-    description: "Product description",
-    price: 500,
-    category: "electronics",
-    condition: ProductCondition.GOOD,
-    images: ["image1.jpg"],
-    location: "Paris",
-  });
-
   beforeEach(async () => {
     repository = new InMemoryProductListingRepository();
     useCase = new GetSellerListingsUseCase(repository);
-
-    await repository.create(sellerId, createMockProduct("iPhone 12"));
-    await repository.create(sellerId, createMockProduct("MacBook Pro"));
-    await repository.create(otherSellerId, createMockProduct("Samsung Galaxy"));
+  
+    await repository.create(createValidProductListing({
+      sellerId,
+      product: createValidProduct({title: "iPhone 12"})
+    }));
+    await repository.create(createValidProductListing({
+      sellerId,
+      product: createValidProduct({title: "iPhone 13"})
+    }));
+    await repository.create(createValidProductListing({
+      sellerId: otherSellerId,
+      product: createValidProduct({title: "Macbook pro"})
+    }));
   });
 
   it("should return all listings for a specific seller", async () => {
     const listings = await useCase.execute(sellerId);
 
     expect(listings).toHaveLength(2);
+    console.log(listings)
     expect(listings.every((listing) => listing.sellerId === sellerId)).toBe(
       true
     );
@@ -40,7 +39,7 @@ describe("GetSellerListingsUseCase", () => {
       "iPhone 12"
     );
     expect(listings.map((listing) => listing.product.title)).toContain(
-      "MacBook Pro"
+      "iPhone 13"
     );
   });
 

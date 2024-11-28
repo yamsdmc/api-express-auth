@@ -23,6 +23,8 @@ describe("DeleteAccountUseCase", () => {
       password: hashedPassword,
       isVerified: true,
       createdAt: new Date(),
+        firstname: "Test",
+        lastname: "User",
     });
   });
 

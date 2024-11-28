@@ -1,11 +1,11 @@
 import { UserRepository } from "@domain/repositories/user-repository";
-import { User } from "@domain/user";
 import { InvalidCredentialsError } from "@domain/errors";
+import {UserDTO} from "@domain/DTO/UserDTO";
 
 export class GetMeUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async execute(userId: string): Promise<Omit<User, "password">> {
+  async execute(userId: string): Promise<Omit<UserDTO, "password">> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
       throw new InvalidCredentialsError();
@@ -16,6 +16,8 @@ export class GetMeUseCase {
       email: user.email,
       isVerified: user.isVerified,
       createdAt: user.createdAt,
+      firstname: user.firstname,
+        lastname: user.lastname,
     };
   }
 }

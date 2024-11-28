@@ -19,6 +19,8 @@ describe("VerifyEmailUseCase", () => {
       isVerified: false,
       verificationToken,
       createdAt: new Date(),
+      firstname: "Test",
+      lastname: "User",
     });
   });
 

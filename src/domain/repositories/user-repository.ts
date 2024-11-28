@@ -1,10 +1,10 @@
-import { User } from "@domain/user";
+import {UserDTO} from "@domain/DTO/UserDTO";
 
 export interface UserRepository {
-  findByEmail(email: string): Promise<User | null>;
-  create(user: User): Promise<User>;
-  findByVerificationToken(token: string): Promise<User | null>;
-  update(id: string, data: Partial<User>): Promise<User>;
-  findById(id: string): Promise<User | null>;
+  findByEmail(email: string): Promise<UserDTO | null>;
+  create(user: UserDTO): Promise<UserDTO>;
+  findByVerificationToken(token: string): Promise<UserDTO | null>;
+  update(id: string, data: Partial<UserDTO>): Promise<UserDTO>;
+  findById(id: string): Promise<UserDTO | null>;
   delete(id: string): Promise<void>;
 }

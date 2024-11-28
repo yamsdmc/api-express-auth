@@ -16,7 +16,6 @@ export class LoginUseCase {
 
   async execute(email: string, password: string): Promise<AuthPayload> {
     const user = await this.userRepository.findByEmail(email);
-    console.log({ user });
     if (!user) {
       throw new InvalidCredentialsError();
     }
@@ -48,6 +47,8 @@ export class LoginUseCase {
         email: user.email,
         isVerified: user.isVerified,
         createdAt: user.createdAt,
+        firstname: user.firstname,
+        lastname: user.lastname,
       },
     };
   }

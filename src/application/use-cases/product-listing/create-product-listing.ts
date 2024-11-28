@@ -1,6 +1,5 @@
 import { ProductListingRepository } from "@domain/repositories/product-listing-repository";
 import { ProductListingEntity } from "@domain/entities/ProductListing";
-import { ProductEntity } from "@domain/entities/Product";
 import { ProductListingValidator } from "@domain/validators/product-listing-validator";
 
 export class CreateProductListingUseCase {
@@ -10,9 +9,13 @@ export class CreateProductListingUseCase {
 
   async execute(
     sellerId: string,
-    product: ProductEntity
+    listing: ProductListingEntity
   ): Promise<ProductListingEntity> {
-    ProductListingValidator.validate(product);
-    return this.productListingRepository.create(sellerId, product);
+    const listingFormatted: ProductListingEntity = {
+      ...listing,
+      sellerId: sellerId,
+    }
+    ProductListingValidator.validate(listingFormatted);
+    return this.productListingRepository.create(listingFormatted);
   }
 }

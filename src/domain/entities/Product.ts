@@ -8,5 +8,4 @@ export interface ProductEntity {
   category: string;
   condition: ProductConditionType;
   images: string[];
-  location: string;
 }

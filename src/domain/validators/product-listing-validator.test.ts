@@ -1,5 +1,4 @@
 import { describe, it, expect } from "vitest";
-import { ProductEntity } from "@domain/entities/Product";
 import { ProductCondition } from "@domain/value-concepts/ProductCondition";
 import { ProductListingValidator } from "@domain/validators/product-listing-validator";
 import {
@@ -10,31 +9,27 @@ import {
   InvalidTitleError,
 } from "@domain/errors";
 import { ProductCategory } from "@domain/value-concepts/ProductCategory";
+import { ProductListingEntity } from "@domain/entities/ProductListing";
+import {createValidProductListing} from "@application/use-cases/product-listing/factories/productListing.factory";
 
-describe("ProductListingValidator", () => {
-  const validProduct: ProductEntity = {
-    title: "Valid Product",
-    description:
-      "This is a valid description that meets the minimum length requirement", // Au moins 20 caractères
-    price: 100,
-    category: "electronics",
-    condition: ProductCondition.NEW,
-    images: ["image1.jpg"],
-    location: "Paris",
-  };
+describe("ListingValidator", () => {
+  const validListing: ProductListingEntity = createValidProductListing()
 
   describe("price validation", () => {
     it("should not throw error for valid price", () => {
       expect(() =>
-        ProductListingValidator.validate(validProduct)
+        ProductListingValidator.validate(validListing)
       ).not.toThrow();
     });
 
     it("should throw error for negative price", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          price: -1,
+          ...validListing,
+          product: {
+            ...validListing.product,
+            price: -1,
+          },
         })
       ).toThrow(InvalidPriceError);
     });
@@ -42,8 +37,11 @@ describe("ProductListingValidator", () => {
     it("should throw error for price exceeding maximum", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          price: 1000001,
+          ...validListing,
+          product: {
+            ...validListing.product,
+            price: 1000001,
+          },
         })
       ).toThrow(InvalidPriceError);
     });
@@ -51,8 +49,11 @@ describe("ProductListingValidator", () => {
     it("should throw error for non-numeric price", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          price: "invalid" as any,
+          ...validListing,
+          product: {
+            ...validListing.product,
+            price: "invalid" as any,
+          },
         })
       ).toThrow(InvalidPriceError);
     });
@@ -61,15 +62,18 @@ describe("ProductListingValidator", () => {
   describe("images validation", () => {
     it("should not throw error for valid images array", () => {
       expect(() =>
-        ProductListingValidator.validate(validProduct)
+        ProductListingValidator.validate(validListing)
       ).not.toThrow();
     });
 
     it("should throw error for empty images array", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          images: [],
+          ...validListing,
+          product: {
+            ...validListing.product,
+            images: [],
+          },
         })
       ).toThrow(InvalidImagesError);
     });
@@ -77,8 +81,11 @@ describe("ProductListingValidator", () => {
     it("should throw error for too many images", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          images: ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg"],
+          ...validListing,
+          product: {
+            ...validListing.product,
+            images: ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg"],
+          },
         })
       ).toThrow(InvalidImagesError);
     });
@@ -86,8 +93,11 @@ describe("ProductListingValidator", () => {
     it("should throw error for non-string image URLs", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          images: [123 as any],
+          ...validListing,
+          product: {
+            ...validListing.product,
+            images: [123 as any],
+          },
         })
       ).toThrow(InvalidImagesError);
     });
@@ -95,8 +105,35 @@ describe("ProductListingValidator", () => {
     it("should throw error for empty image URLs", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          images: [""],
+          ...validListing,
+          product: {
+            ...validListing.product,
+            images: [""],
+          },
+        })
+      ).toThrow(InvalidImagesError);
+    });
+
+    it("should throw error for non-string base64 images", () => {
+      expect(() =>
+        ProductListingValidator.validate({
+          ...validListing,
+          product: {
+            ...validListing.product,
+            images: [123 as any],
+          },
+        })
+      ).toThrow(InvalidImagesError);
+    });
+
+    it("should throw error for invalid base64 images", () => {
+      expect(() =>
+        ProductListingValidator.validate({
+          ...validListing,
+          product: {
+            ...validListing.product,
+            images: ["invalid-string"],
+          },
         })
       ).toThrow(InvalidImagesError);
     });
@@ -105,15 +142,18 @@ describe("ProductListingValidator", () => {
   describe("title validation", () => {
     it("should not throw error for valid title", () => {
       expect(() =>
-        ProductListingValidator.validate(validProduct)
+        ProductListingValidator.validate(validListing)
       ).not.toThrow();
     });
 
     it("should throw error for title too short", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          title: "ab",
+          ...validListing,
+          product: {
+            ...validListing.product,
+            title: "ab",
+          },
         })
       ).toThrow(InvalidTitleError);
     });
@@ -121,8 +161,11 @@ describe("ProductListingValidator", () => {
     it("should throw error for title too long", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          title: "a".repeat(101),
+          ...validListing,
+          product: {
+            ...validListing.product,
+            title: "a".repeat(101),
+          },
         })
       ).toThrow(InvalidTitleError);
     });
@@ -130,8 +173,11 @@ describe("ProductListingValidator", () => {
     it("should throw error for non-string title", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          title: 123 as any,
+          ...validListing,
+          product: {
+            ...validListing.product,
+            title: 123 as any,
+          },
         })
       ).toThrow(InvalidTitleError);
     });
@@ -140,15 +186,18 @@ describe("ProductListingValidator", () => {
   describe("description validation", () => {
     it("should not throw error for valid description", () => {
       expect(() =>
-        ProductListingValidator.validate(validProduct)
+        ProductListingValidator.validate(validListing)
       ).not.toThrow();
     });
 
     it("should throw error for description too short", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          description: "Too short",
+          ...validListing,
+          product: {
+            ...validListing.product,
+            description: "Too short",
+          },
         })
       ).toThrow(InvalidDescriptionError);
     });
@@ -156,8 +205,11 @@ describe("ProductListingValidator", () => {
     it("should throw error for description too long", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          description: "a".repeat(1001),
+          ...validListing,
+          product: {
+            ...validListing.product,
+            description: "a".repeat(1001),
+          },
         })
       ).toThrow(InvalidDescriptionError);
     });
@@ -165,8 +217,11 @@ describe("ProductListingValidator", () => {
     it("should throw error for non-string description", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          description: 123 as any,
+          ...validListing,
+          product: {
+            ...validListing.product,
+            description: 123 as any,
+          },
         })
       ).toThrow(InvalidDescriptionError);
     });
@@ -174,8 +229,11 @@ describe("ProductListingValidator", () => {
     it("should accept description with exactly minimum length", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          description: "a".repeat(20),
+          ...validListing,
+          product: {
+            ...validListing.product,
+            description: "a".repeat(20),
+          },
         })
       ).not.toThrow();
     });
@@ -183,8 +241,11 @@ describe("ProductListingValidator", () => {
     it("should accept description with exactly maximum length", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          description: "a".repeat(1000),
+          ...validListing,
+          product: {
+            ...validListing.product,
+            description: "a".repeat(1000),
+          },
         })
       ).not.toThrow();
     });
@@ -192,9 +253,12 @@ describe("ProductListingValidator", () => {
     it("should validate description with special characters", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          description:
-            "This is a valid description with special chars: @#$%^&*()!",
+          ...validListing,
+          product: {
+            ...validListing.product,
+            description:
+              "This is a valid description with special chars: @#$%^&*()!",
+          },
         })
       ).not.toThrow();
     });
@@ -204,8 +268,11 @@ describe("ProductListingValidator", () => {
     it("should not throw error for valid category", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          category: ProductCategory.ELECTRONICS,
+          ...validListing,
+          product: {
+            ...validListing.product,
+            category: ProductCategory.ELECTRONICS,
+          },
         })
       ).not.toThrow();
     });
@@ -213,8 +280,11 @@ describe("ProductListingValidator", () => {
     it("should throw error for invalid category", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          category: "invalid-category" as any,
+          ...validListing,
+          product: {
+            ...validListing.product,
+            category: "invalid-category" as any,
+          },
         })
       ).toThrow(InvalidCategoryError);
     });
@@ -222,8 +292,11 @@ describe("ProductListingValidator", () => {
     it("should throw error for empty category", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          category: "" as any,
+          ...validListing,
+          product: {
+            ...validListing.product,
+            category: "" as any,
+          },
         })
       ).toThrow(InvalidCategoryError);
     });
@@ -232,8 +305,11 @@ describe("ProductListingValidator", () => {
       Object.values(ProductCategory).forEach((category) => {
         expect(() =>
           ProductListingValidator.validate({
-            ...validProduct,
-            category,
+            ...validListing,
+            product: {
+              ...validListing.product,
+              category,
+            },
           })
         ).not.toThrow();
       });
@@ -243,17 +319,20 @@ describe("ProductListingValidator", () => {
   describe("multiple validations", () => {
     it("should validate all fields correctly", () => {
       expect(() =>
-        ProductListingValidator.validate(validProduct)
+        ProductListingValidator.validate(validListing)
       ).not.toThrow();
     });
 
     it("should throw first encountered error when multiple fields are invalid", () => {
       expect(() =>
         ProductListingValidator.validate({
-          ...validProduct,
-          price: -1,
-          images: [],
-          title: "",
+          ...validListing,
+          product: {
+            ...validListing.product,
+            price: -1,
+            images: [],
+            title: "",
+          },
         })
       ).toThrow();
     });

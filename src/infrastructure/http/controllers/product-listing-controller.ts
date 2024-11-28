@@ -4,6 +4,7 @@ import { UpdateProductListingUseCase } from "@application/use-cases/product-list
 import { DeleteProductListingUseCase } from "@application/use-cases/product-listing/delete-product-listing";
 import { NextFunction, Request, Response } from "express";
 import { GetListingByIdUseCase } from "@application/use-cases/product-listing/get-listing-by-id";
+import {GetListingsUseCase} from "@application/use-cases/product-listing/get-listings";
 
 export class ProductListingController {
   constructor(
@@ -11,14 +12,32 @@ export class ProductListingController {
     private readonly getSellerListingsUseCase: GetSellerListingsUseCase,
     private readonly updateProductListingUseCase: UpdateProductListingUseCase,
     private readonly deleteProductListingUseCase: DeleteProductListingUseCase,
-    private readonly getListingByIdUseCase: GetListingByIdUseCase
+    private readonly getListingByIdUseCase: GetListingByIdUseCase,
+    private readonly getListingsUseCase: GetListingsUseCase
   ) {}
+
+  async getListings(req: Request, res: Response, next: NextFunction): Promise<void> {
+    console.log('getListings')
+    try {
+      const filters = {
+        category: req.query.category as string,
+        minPrice: req.query.minPrice ? Number(req.query.minPrice) : undefined,
+        maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined
+      };
+
+      const listings = await this.getListingsUseCase.execute(filters);
+      res.json(listings);
+    } catch (error) {
+      next(error);
+    }
+  }
 
   async createListing(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
+    console.log('createListing');
     try {
       const sellerId = req.userId;
       const listing = await this.createProductListingUseCase.execute(
@@ -78,6 +97,7 @@ export class ProductListingController {
       next(error);
     }
   }
+
   async getListingById(
     req: Request,
     res: Response,
@@ -85,6 +105,7 @@ export class ProductListingController {
   ): Promise<void> {
     try {
       const { id } = req.params;
+      console.log('getListingById -> id', id);
       const listing = await this.getListingByIdUseCase.execute(id);
       res.json(listing);
     } catch (error) {

@@ -1,44 +1,70 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { GetListingByIdUseCase } from "@application/use-cases/product-listing/get-listing-by-id";
-import { InMemoryProductListingRepository } from "@infrastructure/repositories/in-memory/in-memory-product-listing-repository";
-import { ProductCondition } from "@domain/value-concepts/ProductCondition";
-import { ListingNotFoundError } from "@domain/errors";
+import {describe, it, expect, beforeEach} from "vitest";
+import {GetListingByIdUseCase} from "@application/use-cases/product-listing/get-listing-by-id";
+import {
+    InMemoryProductListingRepository
+} from "@infrastructure/repositories/in-memory/in-memory-product-listing-repository";
+import {ListingNotFoundError} from "@domain/errors";
+import {ProductListingEntity} from "@domain/entities/ProductListing";
+import {createValidProductListing} from "./factories/productListing.factory";
+import {UserRepository} from "@domain/repositories/user-repository";
+import {InMemoryUserRepository} from "@infrastructure/repositories/in-memory/in-memory-user-repository";
 
 describe("GetListingByIdUseCase", () => {
-  let useCase: GetListingByIdUseCase;
-  let repository: InMemoryProductListingRepository;
-  let existingListingId: string;
+    let useCase: GetListingByIdUseCase;
+    let repository: InMemoryProductListingRepository;
+    let userRepository: UserRepository;
+    let existingListingId: string;
 
-  const mockProduct = {
-    title: "iPhone 12",
-    description:
-      "This is a valid description that meets the minimum length requirement",
-    price: 500,
-    category: "electronics",
-    condition: ProductCondition.GOOD,
-    images: ["image1.jpg"],
-    location: "Paris",
-  };
+    const mockListing: ProductListingEntity = createValidProductListing()
 
-  beforeEach(async () => {
-    repository = new InMemoryProductListingRepository();
-    useCase = new GetListingByIdUseCase(repository);
 
-    const listing = await repository.create("seller-123", mockProduct);
-    existingListingId = listing.id!;
-  });
+    beforeEach(async () => {
+        repository = new InMemoryProductListingRepository();
+        userRepository = new InMemoryUserRepository();
+        useCase = new GetListingByIdUseCase(repository, userRepository);
 
-  it("should return listing for valid id", async () => {
-    const listing = await useCase.execute(existingListingId);
+        const listing = await repository.create(mockListing);
+        existingListingId = listing.id!;
+    });
 
-    expect(listing).toBeDefined();
-    expect(listing.id).toBe(existingListingId);
-    expect(listing.product.title).toBe(mockProduct.title);
-  });
+    it("should return listing for valid id", async () => {
+        userRepository.create({
+            id: mockListing.sellerId,
+            email: "test@example.com",
+            password: "hashedPassword",
+            isVerified: true,
+            createdAt: new Date(),
+            firstname: "Test",
+            lastname: "User",
+        })
+        const listing = await useCase.execute(existingListingId);
 
-  it("should throw ListingNotFoundError for non-existent id", async () => {
-    await expect(useCase.execute("non-existent-id")).rejects.toThrow(
-      ListingNotFoundError
-    );
-  });
+        expect(listing).toBeDefined();
+        expect(listing.id).toBe(existingListingId);
+        expect(listing.product.title).toBe(mockListing.product.title);
+    });
+
+    it("should return listing for valid id with some users informations", async () => {
+        userRepository.create({
+            id: mockListing.sellerId,
+            email: "test@example.com",
+            password: "hashedPassword",
+            isVerified: true,
+            createdAt: new Date(),
+            firstname: "Test",
+            lastname: "User",
+        })
+        const listing = await useCase.execute(existingListingId);
+
+        expect(listing).toBeDefined();
+        expect(listing.id).toBe(existingListingId);
+        expect(listing.user).toEqual({
+            fullName: 'Test User', numberOfActiveLists: 1
+        });
+    });
+    it("should throw ListingNotFoundError for non-existent id", async () => {
+        await expect(useCase.execute("non-existent-id")).rejects.toThrow(
+            ListingNotFoundError
+        );
+    });
 });

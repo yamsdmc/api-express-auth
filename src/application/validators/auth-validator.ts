@@ -17,6 +17,8 @@ export const registerSchema = z.object({
       /[^A-Za-z0-9]/,
       "Password must contain at least one special character"
     ),
+  firstname: z.string().min(1, "Firstname is required").max(100, "Firstname too long"),
+  lastname: z.string().min(1, "Lastname is required").max(100, "Lastname too long"),
 });
 
 export const loginSchema = z.object({

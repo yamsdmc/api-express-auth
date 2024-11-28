@@ -13,6 +13,7 @@ export const authMiddleware = (
     next: NextFunction
   ): Promise<void> => {
     try {
+      console.log('authMiddleware');
       const token = req.header("Authorization")?.replace("Bearer ", "");
       if (!token) {
         res.status(401).json({ message: "No token provided" });
@@ -25,7 +26,9 @@ export const authMiddleware = (
       }
 
       const userId = tokenService.verifyToken(token);
+      console.log({userId})
       if (!userId) {
+        console.log('InvalidTokenError');
         throw new TokenExpiredError();
       }
 

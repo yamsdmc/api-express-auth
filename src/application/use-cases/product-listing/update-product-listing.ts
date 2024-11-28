@@ -14,7 +14,7 @@ export class UpdateProductListingUseCase {
   async execute(
     listingId: string,
     sellerId: string,
-    productData: Partial<ProductEntity>
+    listingData: Partial<ProductListingEntity>
   ): Promise<ProductListingEntity> {
     const listing = await this.productListingRepository.findById(listingId);
     if (!listing) {
@@ -25,6 +25,6 @@ export class UpdateProductListingUseCase {
       throw new UnauthorizedListingAccessError();
     }
 
-    return this.productListingRepository.update(listingId, productData);
+    return this.productListingRepository.update(listingId, listingData);
   }
 }

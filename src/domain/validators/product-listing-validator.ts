@@ -1,10 +1,11 @@
-import { ProductEntity } from "@domain/entities/Product";
+import { ProductListingEntity } from "@domain/entities/ProductListing";
 import {
   InvalidCategoryError,
   InvalidDescriptionError,
   InvalidImagesError,
   InvalidPriceError,
   InvalidTitleError,
+  InvalidPhoneNumberError,
 } from "@domain/errors";
 import {
   ProductCategory,
@@ -20,12 +21,13 @@ export class ProductListingValidator {
   private static readonly MIN_DESCRIPTION_LENGTH = 20;
   private static readonly MAX_DESCRIPTION_LENGTH = 1000;
 
-  static validate(product: ProductEntity): void {
-    this.validatePrice(product.price);
-    this.validateImages(product.images);
-    this.validateTitle(product.title);
-    this.validateDescription(product.description);
-    this.validateCategory(product.category);
+  static validate(listing: ProductListingEntity): void {
+    this.validatePrice(listing.product.price);
+    this.validateImages(listing.product.images);
+    this.validateTitle(listing.product.title);
+    this.validateDescription(listing.product.description);
+    this.validateCategory(listing.product.category);
+    this.validatePhoneNumber(listing.phoneNumber);
   }
 
   private static validatePrice(price: number): void {
@@ -51,9 +53,9 @@ export class ProductListingValidator {
       throw new InvalidImagesError(`Cannot exceed ${this.MAX_IMAGES} images`);
     }
     if (
-      !images.every((img) => typeof img === "string" && img.trim().length > 0)
+      !images.every((img) => typeof img === "string" && img.startsWith('data:image'))
     ) {
-      throw new InvalidImagesError("All images must be valid URLs");
+      throw new InvalidImagesError("All images must be valid base64 strings");
     }
   }
 
@@ -94,6 +96,15 @@ export class ProductListingValidator {
       throw new InvalidDescriptionError(
         `Description cannot exceed ${this.MAX_DESCRIPTION_LENGTH} characters`
       );
+    }
+  }
+
+  private static validatePhoneNumber(phoneNumber: string): void {
+    if (typeof phoneNumber !== "string") {
+      throw new InvalidPhoneNumberError("Phone number must be a string");
+    }
+    if (!/^\+?[\d\s-]+$/.test(phoneNumber)) {
+      throw new InvalidPhoneNumberError("Invalid phone number format");
     }
   }
 }

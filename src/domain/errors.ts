@@ -104,3 +104,9 @@ export class InvalidCategoryError extends ListingError {
     super(message, "LISTING_CATEGORY_001", 400);
   }
 }
+
+export class InvalidPhoneNumberError extends ListingError {
+  constructor(message: string) {
+    super(message, "LISTING_PHONE_NUMBER_001", 400);
+  }
+}

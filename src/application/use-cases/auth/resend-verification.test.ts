@@ -26,6 +26,8 @@ describe("ResendVerificationEmailUseCase", () => {
       isVerified: false,
       verificationToken: "old-token",
       createdAt: new Date(),
+      firstname: "Test",
+      lastname: "User",
     });
 
     await useCase.execute(user.email);
@@ -42,6 +44,8 @@ describe("ResendVerificationEmailUseCase", () => {
       password: "hashedPassword",
       isVerified: true,
       createdAt: new Date(),
+      firstname: "Test",
+      lastname: "User",
     });
 
     await expect(useCase.execute("test@example.com")).rejects.toThrow(
