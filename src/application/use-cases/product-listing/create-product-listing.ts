@@ -14,7 +14,7 @@ export class CreateProductListingUseCase {
     const listingFormatted: ProductListingEntity = {
       ...listing,
       sellerId: sellerId,
-    }
+    };
     ProductListingValidator.validate(listingFormatted);
     return this.productListingRepository.create(listingFormatted);
   }

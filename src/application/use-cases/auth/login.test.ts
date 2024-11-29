@@ -40,7 +40,12 @@ describe("LoginUseCase", () => {
       emailService
     );
 
-    await registerUseCase.execute("test@example.com", "password123");
+    await registerUseCase.execute(
+      "test@example.com",
+      "password123",
+      "Test",
+      "password"
+    );
     const user = await userRepository.findByEmail("test@example.com");
     if (user) {
       await userRepository.update(user.id!, { isVerified: true });
@@ -65,8 +70,8 @@ describe("LoginUseCase", () => {
       password: await passwordService.hash("password123"),
       isVerified: false,
       createdAt: new Date(),
-        firstname: "Test",
-        lastname: "User",
+      firstname: "Test",
+      lastname: "User",
     });
 
     await expect(

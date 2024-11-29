@@ -1,6 +1,6 @@
 import { UserRepository } from "@domain/repositories/user-repository";
 import { InvalidCredentialsError } from "@domain/errors";
-import {UserDTO} from "@domain/DTO/UserDTO";
+import { UserDTO } from "@domain/DTO/UserDTO";
 
 export class GetMeUseCase {
   constructor(private readonly userRepository: UserRepository) {}
@@ -17,7 +17,7 @@ export class GetMeUseCase {
       isVerified: user.isVerified,
       createdAt: user.createdAt,
       firstname: user.firstname,
-        lastname: user.lastname,
+      lastname: user.lastname,
     };
   }
 }

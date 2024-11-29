@@ -1,35 +1,38 @@
 import { ProductEntity } from "@domain/entities/Product";
 import { ProductListingEntity } from "@domain/entities/ProductListing";
 import { ProductListingRepository } from "@domain/repositories/product-listing-repository";
-import {ListingFilters} from "@domain/value-concepts/ListingFilters";
+import { ListingFilters } from "@domain/value-concepts/ListingFilters";
 import { fakeBase64 } from "./fake-base64";
 
 export class InMemoryProductListingRepository
   implements ProductListingRepository
 {
-  private listings: ProductListingEntity[] = [{
-    id: 'e2d4f3a5-2a17-4d60-bd26-bc7c6e6b1f94',
-    product: {
-      id: "12345",
-      title: "Smartphone Samsung Galaxy S21",
-      description: "Un smartphone haut de gamme en excellent état, vendu avec tous les accessoires d'origine.",
-      price: 799.99,
-      category: "Electronics",
-      condition: "good",
-      images: fakeBase64,
-    },
-    location: "Paris, France",
-    phoneNumber: "+33612345678",
-    sellerId: "e2d4f3a5-2a17-4d60-bd26-bc7c6e6b1f94",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    },
+  private listings: ProductListingEntity[] = [
     {
-      id: 'e2d4f3a5-2a17-4d60-bd26-bc7c6e6b1f95',
+      id: "e2d4f3a5-2a17-4d60-bd26-bc7c6e6b1f94",
       product: {
         id: "12345",
         title: "Smartphone Samsung Galaxy S21",
-        description: "Un smartphone haut de gamme en excellent état, vendu avec tous les accessoires d'origine.",
+        description:
+          "Un smartphone haut de gamme en excellent état, vendu avec tous les accessoires d'origine.",
+        price: 799.99,
+        category: "Electronics",
+        condition: "good",
+        images: fakeBase64,
+      },
+      location: "Paris, France",
+      phoneNumber: "+33612345678",
+      sellerId: "e2d4f3a5-2a17-4d60-bd26-bc7c6e6b1f94",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      id: "e2d4f3a5-2a17-4d60-bd26-bc7c6e6b1f95",
+      product: {
+        id: "12345",
+        title: "Smartphone Samsung Galaxy S21",
+        description:
+          "Un smartphone haut de gamme en excellent état, vendu avec tous les accessoires d'origine.",
         price: 799.99,
         category: "Electronics",
         condition: "good",
@@ -40,11 +43,12 @@ export class InMemoryProductListingRepository
       sellerId: "e2d4f3a5-2a17-4d60-bd26-bc7c6e6b1f94",
       createdAt: new Date("2024-10-27T09:34:46.147Z"),
       updatedAt: new Date(),
-    }
+    },
   ];
 
   async countListingsForUser(userId: string): Promise<number> {
-    return this.listings.filter((listing) => listing.sellerId === userId).length;
+    return this.listings.filter((listing) => listing.sellerId === userId)
+      .length;
   }
 
   async create(listing: ProductListingEntity): Promise<ProductListingEntity> {
@@ -57,7 +61,7 @@ export class InMemoryProductListingRepository
     };
 
     this.listings.push(newListing);
-    console.log(this.listings.map(listing => listing.createdAt))
+    console.log(this.listings.map((listing) => listing.createdAt));
     return newListing;
   }
 
@@ -101,7 +105,7 @@ export class InMemoryProductListingRepository
   }
 
   async findAll(filters?: ListingFilters): Promise<ProductListingEntity[]> {
-    const listingsFiltered =  this.listings.filter(listing => {
+    const listingsFiltered = this.listings.filter((listing) => {
       if (filters?.category && listing.product.category !== filters.category) {
         return false;
       }
@@ -113,8 +117,10 @@ export class InMemoryProductListingRepository
       }
       return true;
     });
-    
-    return listingsFiltered.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    return listingsFiltered.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
   }
 
   async reset(): Promise<void> {

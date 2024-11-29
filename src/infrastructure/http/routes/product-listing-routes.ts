@@ -12,8 +12,7 @@ export const productListingRouter = (
   const router = Router();
   const auth = authMiddleware(tokenService, blacklistService);
 
-  router.get('/', async (req, res, next) => {
-    console.log('Hello World -----');
+  router.get("/", async (req, res, next) => {
     await controller.getListings(req, res, next);
   });
 
@@ -208,6 +207,9 @@ export const productListingRouter = (
    */
   router.get("/me", auth, (req, res, next) =>
     controller.getSellerListings(req, res, next)
+  );
+  router.get("/me/count", auth, (req, res, next) =>
+    controller.getSellerListingCount(req, res, next)
   );
 
   /**

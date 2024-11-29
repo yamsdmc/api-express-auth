@@ -6,7 +6,10 @@ import {
 import { DeleteProductListingUseCase } from "@application/use-cases/product-listing/delete-product-listing";
 import { InMemoryProductListingRepository } from "@infrastructure/repositories/in-memory/in-memory-product-listing-repository";
 import { ProductListingEntity } from "@domain/entities/ProductListing";
-import { createValidProduct, createValidProductListing } from "./factories/productListing.factory";
+import {
+  createValidProduct,
+  createValidProductListing,
+} from "./factories/productListing.factory";
 
 describe("DeleteProductListingUseCase", () => {
   let useCase: DeleteProductListingUseCase;
@@ -16,7 +19,9 @@ describe("DeleteProductListingUseCase", () => {
   const sellerId = "seller-123";
   const otherSellerId = "seller-456";
 
-  const mockListing: ProductListingEntity = createValidProductListing({sellerId})
+  const mockListing: ProductListingEntity = createValidProductListing({
+    sellerId,
+  });
 
   beforeEach(async () => {
     repository = new InMemoryProductListingRepository();
@@ -47,10 +52,10 @@ describe("DeleteProductListingUseCase", () => {
 
   it("should not delete other sellers listings", async () => {
     const mockListing: ProductListingEntity = createValidProductListing({
-      sellerId: otherSellerId, 
-      product: createValidProduct({title: 'iPhone 15 pro'})
+      sellerId: otherSellerId,
+      product: createValidProduct({ title: "iPhone 15 pro" }),
     });
-    
+
     const createdListing = await repository.create(mockListing);
 
     await expect(useCase.execute(createdListing.id!, sellerId)).rejects.toThrow(

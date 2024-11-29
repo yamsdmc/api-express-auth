@@ -110,3 +110,20 @@ export class InvalidPhoneNumberError extends ListingError {
     super(message, "LISTING_PHONE_NUMBER_001", 400);
   }
 }
+
+export class UserError extends ApplicationError {
+  constructor(message: string, code: string, status = 400) {
+    super(message, code, status);
+  }
+}
+
+export class EmptyUpdateError extends UserError {
+  constructor() {
+    super("At least one field must be provided for update", "USER_004", 400);
+  }
+}
+export class UserNotFoundError extends UserError {
+  constructor() {
+    super("User not found", "USER_001", 404);
+  }
+}

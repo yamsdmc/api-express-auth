@@ -5,8 +5,11 @@ import {
   ListingNotFoundError,
   UnauthorizedListingAccessError,
 } from "@domain/errors";
-import {ProductListingEntity} from "@domain/entities/ProductListing";
-import { createValidProduct, createValidProductListing } from "./factories/productListing.factory";
+import { ProductListingEntity } from "@domain/entities/ProductListing";
+import {
+  createValidProduct,
+  createValidProductListing,
+} from "./factories/productListing.factory";
 
 describe("UpdateProductListingUseCase", () => {
   let useCase: UpdateProductListingUseCase;
@@ -16,7 +19,9 @@ describe("UpdateProductListingUseCase", () => {
   const sellerId = "seller-123";
   const otherSellerId = "seller-456";
 
-  const mockListing: ProductListingEntity = createValidProductListing({sellerId})
+  const mockListing: ProductListingEntity = createValidProductListing({
+    sellerId,
+  });
 
   beforeEach(async () => {
     repository = new InMemoryProductListingRepository();
@@ -29,12 +34,11 @@ describe("UpdateProductListingUseCase", () => {
   it("should update product listing with valid data", async () => {
     const updates = createValidProductListing({
       ...mockListing,
-      product:  createValidProduct({
+      product: createValidProduct({
         price: 450,
         description: "Price reduced!",
-      })
-    })
-   
+      }),
+    });
 
     const updated = await useCase.execute(existingListingId, sellerId, updates);
 
@@ -46,8 +50,8 @@ describe("UpdateProductListingUseCase", () => {
   it("should throw error when listing does not exist", async () => {
     const partialListing: Partial<ProductListingEntity> = {
       product: createValidProduct({
-        price: 450
-      })
+        price: 450,
+      }),
     };
 
     await expect(
@@ -58,8 +62,8 @@ describe("UpdateProductListingUseCase", () => {
   it("should throw error when seller is not the owner", async () => {
     const partialListing: Partial<ProductListingEntity> = {
       product: createValidProduct({
-        price: 450
-      })
+        price: 450,
+      }),
     };
     await expect(
       useCase.execute(existingListingId, otherSellerId, partialListing)
@@ -69,10 +73,14 @@ describe("UpdateProductListingUseCase", () => {
   it("should maintain original data for unmodified fields", async () => {
     const partialListing: Partial<ProductListingEntity> = {
       product: createValidProduct({
-        price: 450
-      })
+        price: 450,
+      }),
     };
-    const updated = await useCase.execute(existingListingId, sellerId, partialListing);
+    const updated = await useCase.execute(
+      existingListingId,
+      sellerId,
+      partialListing
+    );
 
     expect(updated.product).toMatchObject({
       ...mockListing.product,
@@ -87,10 +95,14 @@ describe("UpdateProductListingUseCase", () => {
     await new Promise((resolve) => setTimeout(resolve, 1));
     const partialListing: Partial<ProductListingEntity> = {
       product: createValidProduct({
-        price: 450
-      })
+        price: 450,
+      }),
     };
-    const updated = await useCase.execute(existingListingId, sellerId, partialListing);
+    const updated = await useCase.execute(
+      existingListingId,
+      sellerId,
+      partialListing
+    );
     expect(updated.updatedAt.getTime()).toBeGreaterThan(
       originalUpdatedAt.getTime()
     );
@@ -98,8 +110,8 @@ describe("UpdateProductListingUseCase", () => {
   it("should throw ListingNotFoundError when listing does not exist", async () => {
     const partialListing: Partial<ProductListingEntity> = {
       product: createValidProduct({
-        price: 450
-      })
+        price: 450,
+      }),
     };
     await expect(
       useCase.execute("non-existent-id", sellerId, partialListing)
@@ -109,8 +121,8 @@ describe("UpdateProductListingUseCase", () => {
   it("should throw UnauthorizedListingAccessError when seller is not the owner", async () => {
     const partialListing: Partial<ProductListingEntity> = {
       product: createValidProduct({
-        price: 450
-      })
+        price: 450,
+      }),
     };
     await expect(
       useCase.execute(existingListingId, otherSellerId, partialListing)

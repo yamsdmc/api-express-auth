@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { InMemoryUserRepository } from "@infrastructure/repositories/in-memory/in-memory-user-repository";
 import { InvalidCredentialsError } from "@domain/errors";
-import { GetMeUseCase } from "@application/use-cases/auth/get-me";
+import { GetMeUseCase } from "@application/use-cases/user/get-me";
 
 describe("GetMeUseCase", () => {
   let useCase: GetMeUseCase;
@@ -31,8 +31,8 @@ describe("GetMeUseCase", () => {
       email: testUser.email,
       isVerified: testUser.isVerified,
       createdAt: testUser.createdAt,
-        firstname: testUser.firstname,
-        lastname: testUser.lastname,
+      firstname: testUser.firstname,
+      lastname: testUser.lastname,
     });
     expect(result).not.toHaveProperty("password");
   });

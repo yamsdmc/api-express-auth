@@ -10,10 +10,10 @@ import {
 } from "@domain/errors";
 import { ProductCategory } from "@domain/value-concepts/ProductCategory";
 import { ProductListingEntity } from "@domain/entities/ProductListing";
-import {createValidProductListing} from "@application/use-cases/product-listing/factories/productListing.factory";
+import { createValidProductListing } from "@application/use-cases/product-listing/factories/productListing.factory";
 
 describe("ListingValidator", () => {
-  const validListing: ProductListingEntity = createValidProductListing()
+  const validListing: ProductListingEntity = createValidProductListing();
 
   describe("price validation", () => {
     it("should not throw error for valid price", () => {

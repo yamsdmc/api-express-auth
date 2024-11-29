@@ -1,9 +1,9 @@
 import { ProductListingRepository } from "@domain/repositories/product-listing-repository";
 import { ListingNotFoundError } from "@domain/errors";
-import {UserListingDTO} from "@domain/DTO/UserListingDTO";
-import {UserRepository} from "@domain/repositories/user-repository";
-import {UserListing} from "@domain/models/UserListing";
-import {UserVO} from "@domain/entities/User";
+import { UserListingDTO } from "@domain/DTO/UserListingDTO";
+import { UserRepository } from "@domain/repositories/user-repository";
+import { UserListing } from "@domain/models/UserListing";
+import { UserVO } from "@domain/entities/User";
 
 export class GetListingByIdUseCase {
   constructor(
@@ -17,11 +17,18 @@ export class GetListingByIdUseCase {
       throw new ListingNotFoundError();
     }
 
-    const countListingsForUser = await this.productListingRepository.countListingsForUser(listing.sellerId);
-    console.log(listing.sellerId)
+    const countListingsForUser =
+      await this.productListingRepository.countListingsForUser(
+        listing.sellerId
+      );
+    console.log(listing.sellerId);
     const seller = await this.userRepository.findById(listing.sellerId);
 
-    console.log(seller)
-    return new UserListing(listing, countListingsForUser, new UserVO(seller!).fullName).toDTO();
+    console.log(seller);
+    return new UserListing(
+      listing,
+      countListingsForUser,
+      new UserVO(seller!).fullName
+    ).toDTO();
   }
 }

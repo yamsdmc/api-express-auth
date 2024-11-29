@@ -12,7 +12,7 @@ describe("CreateProductListingUseCase", () => {
   let repository: InMemoryProductListingRepository;
   const sellerId = "seller-123";
 
-  const mockListing: ProductListingEntity = createValidProductListing()
+  const mockListing: ProductListingEntity = createValidProductListing();
 
   beforeEach(() => {
     repository = new InMemoryProductListingRepository();

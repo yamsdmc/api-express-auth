@@ -14,8 +14,6 @@ import { LogoutUseCase } from "@application/use-cases/auth/logout";
 import { InMemoryTokenBlacklist } from "@infrastructure/services/token-blacklist";
 import { ResendVerificationEmailUseCase } from "@application/use-cases/auth/resend-verification";
 import { NodemailerService } from "@infrastructure/services/nodemailer-service";
-import { GetMeUseCase } from "@application/use-cases/auth/get-me";
-import { DeleteAccountUseCase } from "@application/use-cases/auth/delete-account";
 
 describe("AuthController", () => {
   let controller: AuthController;
@@ -60,20 +58,13 @@ describe("AuthController", () => {
       userRepository,
       mailerService
     );
-    const getMeUseCase = new GetMeUseCase(userRepository);
-    const deleteAccountUseCase = new DeleteAccountUseCase(
-      userRepository,
-      passwordService
-    );
     controller = new AuthController(
       registerUseCase,
       loginUseCase,
       logoutUseCase,
       refreshTokenUseCase,
       verifyEmailUseCase,
-      resendVerificationEmailUseCase,
-      getMeUseCase,
-      deleteAccountUseCase
+      resendVerificationEmailUseCase
     );
     mockResponse = {
       status: vi.fn().mockReturnThis(),

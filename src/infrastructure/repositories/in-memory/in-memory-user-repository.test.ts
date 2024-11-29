@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { InMemoryUserRepository } from "./in-memory-user-repository";
-import { User } from "../../../domain/user";
+import { UserDTO } from "@domain/DTO/UserDTO";
 
 describe("InMemoryUserRepository", () => {
   let repository: InMemoryUserRepository;
-  let testUser: User;
+  let testUser: UserDTO;
 
   beforeEach(() => {
     repository = new InMemoryUserRepository();
@@ -14,6 +14,9 @@ describe("InMemoryUserRepository", () => {
       password: "password123",
       isVerified: false,
       createdAt: new Date(),
+      updatedAt: new Date(),
+      firstname: "Test",
+      lastname: "User",
     };
   });
 

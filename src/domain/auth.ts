@@ -1,4 +1,4 @@
-import {UserDTO} from "@domain/DTO/UserDTO";
+import { UserDTO } from "@domain/DTO/UserDTO";
 
 export interface AuthPayload {
   accessToken: string;

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { InMemoryUserRepository } from "@infrastructure/repositories/in-memory/in-memory-user-repository";
 import { BcryptPasswordService } from "@infrastructure/services/bcrypt-password-service";
 import { InvalidCredentialsError } from "@domain/errors";
-import { DeleteAccountUseCase } from "@application/use-cases/auth/delete-account";
+import { DeleteAccountUseCase } from "@application/use-cases/user/delete-account";
 
 describe("DeleteAccountUseCase", () => {
   let useCase: DeleteAccountUseCase;
@@ -23,8 +23,9 @@ describe("DeleteAccountUseCase", () => {
       password: hashedPassword,
       isVerified: true,
       createdAt: new Date(),
-        firstname: "Test",
-        lastname: "User",
+      firstname: "Test",
+      updatedAt: new Date(),
+      lastname: "User",
     });
   });
 

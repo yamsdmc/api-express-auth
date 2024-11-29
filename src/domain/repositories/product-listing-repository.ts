@@ -1,6 +1,6 @@
 import { ProductEntity } from "@domain/entities/Product";
 import { ProductListingEntity } from "@domain/entities/ProductListing";
-import {ListingFilters} from "@application/use-cases/product-listing/get-listings";
+import { ListingFilters } from "@application/use-cases/product-listing/get-listings";
 
 export interface ProductListingRepository {
   create(listing: ProductListingEntity): Promise<ProductListingEntity>;

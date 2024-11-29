@@ -53,7 +53,9 @@ export class ProductListingValidator {
       throw new InvalidImagesError(`Cannot exceed ${this.MAX_IMAGES} images`);
     }
     if (
-      !images.every((img) => typeof img === "string" && img.startsWith('data:image'))
+      !images.every(
+        (img) => typeof img === "string" && img.startsWith("data:image")
+      )
     ) {
       throw new InvalidImagesError("All images must be valid base64 strings");
     }

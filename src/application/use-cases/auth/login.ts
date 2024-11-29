@@ -15,7 +15,9 @@ export class LoginUseCase {
   ) {}
 
   async execute(email: string, password: string): Promise<AuthPayload> {
+    console.log("email", email);
     const user = await this.userRepository.findByEmail(email);
+    console.log("usecase", user);
     if (!user) {
       throw new InvalidCredentialsError();
     }

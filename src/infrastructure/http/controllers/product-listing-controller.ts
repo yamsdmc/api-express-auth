@@ -4,7 +4,7 @@ import { UpdateProductListingUseCase } from "@application/use-cases/product-list
 import { DeleteProductListingUseCase } from "@application/use-cases/product-listing/delete-product-listing";
 import { NextFunction, Request, Response } from "express";
 import { GetListingByIdUseCase } from "@application/use-cases/product-listing/get-listing-by-id";
-import {GetListingsUseCase} from "@application/use-cases/product-listing/get-listings";
+import { GetListingsUseCase } from "@application/use-cases/product-listing/get-listings";
 
 export class ProductListingController {
   constructor(
@@ -16,13 +16,17 @@ export class ProductListingController {
     private readonly getListingsUseCase: GetListingsUseCase
   ) {}
 
-  async getListings(req: Request, res: Response, next: NextFunction): Promise<void> {
-    console.log('getListings')
+  async getListings(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    console.log("getListings");
     try {
       const filters = {
         category: req.query.category as string,
         minPrice: req.query.minPrice ? Number(req.query.minPrice) : undefined,
-        maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined
+        maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined,
       };
 
       const listings = await this.getListingsUseCase.execute(filters);
@@ -37,7 +41,7 @@ export class ProductListingController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    console.log('createListing');
+    console.log("createListing");
     try {
       const sellerId = req.userId;
       const listing = await this.createProductListingUseCase.execute(
@@ -58,7 +62,23 @@ export class ProductListingController {
     try {
       const sellerId = req.userId;
       const listings = await this.getSellerListingsUseCase.execute(sellerId);
+      console.log(listings, null, 2);
       res.json(listings);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getSellerListingCount(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const sellerId = req.userId;
+      const count =
+        await this.getSellerListingsUseCase.countSellerListings(sellerId);
+      res.json({ count });
     } catch (error) {
       next(error);
     }
@@ -105,7 +125,7 @@ export class ProductListingController {
   ): Promise<void> {
     try {
       const { id } = req.params;
-      console.log('getListingById -> id', id);
+      console.log("getListingById -> id", id);
       const listing = await this.getListingByIdUseCase.execute(id);
       res.json(listing);
     } catch (error) {
