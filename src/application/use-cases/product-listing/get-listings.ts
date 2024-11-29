@@ -1,11 +1,17 @@
 import { ProductListingRepository } from "@domain/repositories/product-listing-repository";
 import { ProductListingEntity } from "@domain/entities/ProductListing";
-import { listingFiltersUtils } from "@domain/value-concepts/ListingFilters";
+import {
+  ListingFilters,
+  listingFiltersUtils,
+} from "@domain/value-concepts/ListingFilters";
+import {
+  PaginatedResult,
+  PaginationParams,
+} from "@domain/value-concepts/Pagination";
 
-export interface ListingFilters {
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
+export interface GetListingsParams {
+  pagination: PaginationParams;
+  filters?: ListingFilters | undefined;
 }
 
 export class GetListingsUseCase {
@@ -13,10 +19,13 @@ export class GetListingsUseCase {
     private readonly productListingRepository: ProductListingRepository
   ) {}
 
-  async execute(filters?: ListingFilters): Promise<ProductListingEntity[]> {
+  async execute({
+    pagination,
+    filters,
+  }: GetListingsParams): Promise<PaginatedResult<ProductListingEntity>> {
     if (filters) {
       listingFiltersUtils.validate(filters);
     }
-    return this.productListingRepository.findAll(filters);
+    return this.productListingRepository.findAll(pagination, filters);
   }
 }

@@ -4,7 +4,12 @@ import { UpdateProductListingUseCase } from "@application/use-cases/product-list
 import { DeleteProductListingUseCase } from "@application/use-cases/product-listing/delete-product-listing";
 import { NextFunction, Request, Response } from "express";
 import { GetListingByIdUseCase } from "@application/use-cases/product-listing/get-listing-by-id";
-import { GetListingsUseCase } from "@application/use-cases/product-listing/get-listings";
+import {
+  GetListingsParams,
+  GetListingsUseCase,
+} from "@application/use-cases/product-listing/get-listings";
+import { ProductCategoryType } from "@domain/value-concepts/ProductCategory";
+import { ListingFilters } from "@domain/value-concepts/ListingFilters";
 
 export class ProductListingController {
   constructor(
@@ -21,15 +26,25 @@ export class ProductListingController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    console.log("getListings");
     try {
-      const filters = {
-        category: req.query.category as string,
+      const pagination = {
+        offset: parseInt(req.query.offset as string) || 0,
+        limit: parseInt(req.query.limit as string) || 10,
+      };
+
+      const filters: ListingFilters = {
+        category: req.query.category
+          ? (req.query.category as ProductCategoryType)
+          : undefined,
         minPrice: req.query.minPrice ? Number(req.query.minPrice) : undefined,
         maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined,
       };
 
-      const listings = await this.getListingsUseCase.execute(filters);
+      const listings = await this.getListingsUseCase.execute({
+        pagination,
+        filters,
+      });
+
       res.json(listings);
     } catch (error) {
       next(error);

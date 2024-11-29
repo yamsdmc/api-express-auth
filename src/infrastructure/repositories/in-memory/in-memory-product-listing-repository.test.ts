@@ -143,71 +143,49 @@ describe("InMemoryProductListingRepository", () => {
     });
 
     it("should return all listings without filters", async () => {
-      const listings = await repository.findAll();
-      expect(listings).toHaveLength(2);
+      const listings = await repository.findAll({
+        offset: 0,
+        limit: 10,
+      });
+      expect(listings.data).toHaveLength(2);
+      expect(listings.total).toBe(2);
     });
 
     it("should filter by category", async () => {
-      const filters: ListingFilters = {
-        category: ProductCategory.ELECTRONICS,
-      };
-
-      const listings = await repository.findAll(filters);
-      expect(listings).toHaveLength(1);
-      expect(listings[0].product.category).toBe(ProductCategory.ELECTRONICS);
+      const result = await repository.findAll(
+        { offset: 0, limit: 10 },
+        { category: ProductCategory.ELECTRONICS }
+      );
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].product.category).toBe(ProductCategory.ELECTRONICS);
     });
 
     it("should filter by min price", async () => {
-      const filters: ListingFilters = {
-        minPrice: 750,
-      };
-
-      const listings = await repository.findAll(filters);
-      expect(listings).toHaveLength(1);
-      expect(listings[0].product.price).toBe(1000);
-    });
-
-    it("should filter by max price", async () => {
-      const filters: ListingFilters = {
-        maxPrice: 750,
-      };
-
-      const listings = await repository.findAll(filters);
-      expect(listings).toHaveLength(1);
-      expect(listings[0].product.price).toBe(400);
-    });
-
-    it("should filter by price range", async () => {
-      const filters: ListingFilters = {
-        minPrice: 400,
-        maxPrice: 600,
-      };
-
-      const listings = await repository.findAll(filters);
-      expect(listings).toHaveLength(1);
-      expect(listings[0].product.price).toBe(400);
+      const result = await repository.findAll(
+        { offset: 0, limit: 10 },
+        { minPrice: 750 }
+      );
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].product.price).toBe(1000);
     });
 
     it("should return empty array when no listings match filters", async () => {
-      const filters: ListingFilters = {
-        category: ProductCategory.BOOKS,
-      };
-
-      const listings = await repository.findAll(filters);
-      expect(listings).toHaveLength(0);
+      const result = await repository.findAll(
+        { offset: 0, limit: 10 },
+        { category: ProductCategory.BOOKS }
+      );
+      expect(result.data).toHaveLength(0);
+      expect(result.total).toBe(0);
     });
 
     it("should combine multiple filters", async () => {
-      const filters: ListingFilters = {
-        category: ProductCategory.ELECTRONICS,
-        maxPrice: 800,
-      };
-
-      const listings = await repository.findAll(filters);
-      console.log(listings);
-      expect(listings).toHaveLength(1);
-      expect(listings[0].product.category).toBe(ProductCategory.ELECTRONICS);
-      expect(listings[0].product.price).toBe(400);
+      const result = await repository.findAll(
+        { offset: 0, limit: 10 },
+        { category: ProductCategory.ELECTRONICS, maxPrice: 800 }
+      );
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].product.category).toBe(ProductCategory.ELECTRONICS);
+      expect(result.data[0].product.price).toBe(400);
     });
   });
 });

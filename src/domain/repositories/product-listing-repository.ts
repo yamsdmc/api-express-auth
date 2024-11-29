@@ -1,6 +1,10 @@
 import { ProductEntity } from "@domain/entities/Product";
 import { ProductListingEntity } from "@domain/entities/ProductListing";
-import { ListingFilters } from "@application/use-cases/product-listing/get-listings";
+import {
+  PaginatedResult,
+  PaginationParams,
+} from "@domain/value-concepts/Pagination";
+import { ListingFilters } from "@domain/value-concepts/ListingFilters";
 
 export interface ProductListingRepository {
   create(listing: ProductListingEntity): Promise<ProductListingEntity>;
@@ -11,6 +15,9 @@ export interface ProductListingRepository {
     product: Partial<ProductEntity>
   ): Promise<ProductListingEntity>;
   delete(id: string): Promise<void>;
-  findAll(filters?: ListingFilters): Promise<ProductListingEntity[]>;
+  findAll(
+    pagination: PaginationParams,
+    filters?: ListingFilters
+  ): Promise<PaginatedResult<ProductListingEntity>>;
   countListingsForUser(userId: string): Promise<number>;
 }

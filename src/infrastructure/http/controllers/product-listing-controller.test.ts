@@ -7,6 +7,7 @@ import { GetListingByIdUseCase } from "@application/use-cases/product-listing/ge
 import { UpdateProductListingUseCase } from "@application/use-cases/product-listing/update-product-listing";
 import { DeleteProductListingUseCase } from "@application/use-cases/product-listing/delete-product-listing";
 import { ProductCondition } from "@domain/value-concepts/ProductCondition";
+import { GetListingsUseCase } from "@application/use-cases/product-listing/get-listings";
 
 describe("ProductListingController", () => {
   let controller: ProductListingController;
@@ -15,6 +16,7 @@ describe("ProductListingController", () => {
   let mockGetListingByIdUseCase: GetListingByIdUseCase;
   let mockUpdateUseCase: UpdateProductListingUseCase;
   let mockDeleteUseCase: DeleteProductListingUseCase;
+  let mockGetListingsUseCase: GetListingsUseCase;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let mockNext: any;
@@ -50,6 +52,9 @@ describe("ProductListingController", () => {
     mockDeleteUseCase = {
       execute: vi.fn(),
     } as unknown as DeleteProductListingUseCase;
+    mockGetListingsUseCase = {
+      execute: vi.fn(),
+    } as unknown as GetListingsUseCase;
 
     mockResponse = {
       json: vi.fn(),
@@ -64,7 +69,8 @@ describe("ProductListingController", () => {
       mockGetSellerListingsUseCase,
       mockUpdateUseCase,
       mockDeleteUseCase,
-      mockGetListingByIdUseCase
+      mockGetListingByIdUseCase,
+      mockGetListingsUseCase
     );
   });
 

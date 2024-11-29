@@ -8,6 +8,8 @@ import { authMiddleware } from "@infrastructure/http/middleware/auth-middleware"
 import { TokenBlacklistService } from "@domain/services/token-blacklist";
 import { TokenService } from "@application/services/token-service";
 import { UserController } from "@infrastructure/http/controllers/user-controller";
+import rateLimit from "express-rate-limit";
+import { authLimiter } from "@infrastructure/http/middleware/rate-limit";
 
 export const userRouter = (
   userController: UserController,
@@ -99,9 +101,10 @@ export const userRouter = (
    */
   router.patch(
     "/me",
+    authLimiter,
     authMiddleware(tokenService, blacklistService),
     validate(updateUserSchema),
-    userController.updateUser
+    async (req, res, next) => userController.updateUser(req, res, next)
   );
 
   /**

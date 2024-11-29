@@ -1,50 +1,19 @@
-import { ProductEntity } from "@domain/entities/Product";
 import { ProductListingEntity } from "@domain/entities/ProductListing";
 import { ProductListingRepository } from "@domain/repositories/product-listing-repository";
 import { ListingFilters } from "@domain/value-concepts/ListingFilters";
 import { fakeBase64 } from "./fake-base64";
+import {
+  PaginatedResult,
+  PaginationParams,
+} from "@domain/value-concepts/Pagination";
+import { ProductCategory } from "@domain/value-concepts/ProductCategory";
+import { ProductCondition } from "@domain/value-concepts/ProductCondition";
+import { fakeUserId } from "@infrastructure/repositories/in-memory/in-memory-user-repository";
 
 export class InMemoryProductListingRepository
   implements ProductListingRepository
 {
-  private listings: ProductListingEntity[] = [
-    {
-      id: "e2d4f3a5-2a17-4d60-bd26-bc7c6e6b1f94",
-      product: {
-        id: "12345",
-        title: "Smartphone Samsung Galaxy S21",
-        description:
-          "Un smartphone haut de gamme en excellent état, vendu avec tous les accessoires d'origine.",
-        price: 799.99,
-        category: "Electronics",
-        condition: "good",
-        images: fakeBase64,
-      },
-      location: "Paris, France",
-      phoneNumber: "+33612345678",
-      sellerId: "e2d4f3a5-2a17-4d60-bd26-bc7c6e6b1f94",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: "e2d4f3a5-2a17-4d60-bd26-bc7c6e6b1f95",
-      product: {
-        id: "12345",
-        title: "Smartphone Samsung Galaxy S21",
-        description:
-          "Un smartphone haut de gamme en excellent état, vendu avec tous les accessoires d'origine.",
-        price: 799.99,
-        category: "Electronics",
-        condition: "good",
-        images: fakeBase64,
-      },
-      location: "Paris, France",
-      phoneNumber: "+33612345678",
-      sellerId: "e2d4f3a5-2a17-4d60-bd26-bc7c6e6b1f94",
-      createdAt: new Date("2024-10-27T09:34:46.147Z"),
-      updatedAt: new Date(),
-    },
-  ];
+  private listings: ProductListingEntity[] = this.generateMockListings(80);
 
   async countListingsForUser(userId: string): Promise<number> {
     return this.listings.filter((listing) => listing.sellerId === userId)
@@ -104,7 +73,10 @@ export class InMemoryProductListingRepository
     this.listings.splice(index, 1);
   }
 
-  async findAll(filters?: ListingFilters): Promise<ProductListingEntity[]> {
+  async findAll(
+    pagination: PaginationParams,
+    filters?: ListingFilters
+  ): Promise<PaginatedResult<ProductListingEntity>> {
     const listingsFiltered = this.listings.filter((listing) => {
       if (filters?.category && listing.product.category !== filters.category) {
         return false;
@@ -118,12 +90,48 @@ export class InMemoryProductListingRepository
       return true;
     });
 
-    return listingsFiltered.sort(
+    const sorted = listingsFiltered.sort(
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
     );
+
+    const total = sorted.length;
+    const data = sorted.slice(
+      pagination.offset,
+      pagination.offset + pagination.limit
+    );
+    const hasMore = total > pagination.offset + pagination.limit;
+
+    return {
+      data,
+      total,
+      hasMore,
+    };
   }
 
   async reset(): Promise<void> {
     this.listings = [];
+  }
+  private generateMockListings(count: number): ProductListingEntity[] {
+    const conditions = Object.values(ProductCondition);
+    const categories = Object.values(ProductCategory);
+    const cities = ["Paris", "Lyon", "Marseille", "Bordeaux"];
+
+    return Array.from({ length: count }, (_, i) => ({
+      id: crypto.randomUUID(),
+      product: {
+        id: crypto.randomUUID(),
+        title: `Product ${i + 1}`,
+        description: `Description for product ${i + 1}`,
+        price: Math.floor(Math.random() * 1000) + 100,
+        category: categories[Math.floor(Math.random() * categories.length)],
+        condition: conditions[Math.floor(Math.random() * conditions.length)],
+        images: fakeBase64,
+      },
+      location: `${cities[Math.floor(Math.random() * cities.length)]}, France`,
+      phoneNumber: "+33612345678",
+      sellerId: fakeUserId,
+      createdAt: new Date(Date.now() - Math.floor(Math.random() * 10000000)),
+      updatedAt: new Date(),
+    }));
   }
 }

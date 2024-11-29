@@ -14,17 +14,34 @@ describe("GetListingsUseCase", () => {
 
   it("should filter by category", async () => {
     const listings = await useCase.execute({
-      category: ProductCategory.ELECTRONICS,
+      filters: {
+        category: ProductCategory.ELECTRONICS,
+      },
+      pagination: {
+        offset: 0,
+        limit: 10,
+      },
     });
     expect(
-      listings.every((l) => l.product.category === ProductCategory.ELECTRONICS)
+      listings.data.every(
+        (l) => l.product.category === ProductCategory.ELECTRONICS
+      )
     ).toBe(true);
   });
 
   it("should filter by price range", async () => {
-    const listings = await useCase.execute({ minPrice: 10, maxPrice: 20 });
+    const listings = await useCase.execute({
+      filters: {
+        minPrice: 10,
+        maxPrice: 20,
+      },
+      pagination: {
+        offset: 0,
+        limit: 10,
+      },
+    });
     expect(
-      listings.every((l) => l.product.price >= 10 && l.product.price <= 20)
+      listings.data.every((l) => l.product.price >= 10 && l.product.price <= 20)
     ).toBe(true);
   });
 });

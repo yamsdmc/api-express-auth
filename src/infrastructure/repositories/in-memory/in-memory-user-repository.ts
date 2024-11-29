@@ -2,10 +2,11 @@ import { UserRepository } from "@domain/repositories/user-repository";
 import { UserDTO } from "@domain/DTO/UserDTO";
 import { UpdateUserData } from "@application/use-cases/user/update-user";
 
+export const fakeUserId = "e2d4f3a5-2a17-4d60-bd26-bc7c6e6b1f94";
 export class InMemoryUserRepository implements UserRepository {
   private users: UserDTO[] = [
     {
-      id: "e2d4f3a5-2a17-4d60-bd26-bc7c6e6b1f94",
+      id: fakeUserId,
       email: "yamsdmc@gmail.com",
       password: "$2b$10$5ZFXJiMB.sWvpDc26ryQo.DW7xdvwTTfqcV.rxQlnmDM60CoR6KCy",
       isVerified: true,

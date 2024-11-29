@@ -9,6 +9,7 @@ export class UserVO {
   private readonly isVerified: boolean;
   private readonly verificationToken?: string | null;
   private readonly createdAt: Date;
+  private readonly updatedAt: Date;
 
   constructor(user: UserDTO) {
     this.id = user.id;
@@ -19,6 +20,7 @@ export class UserVO {
     this.isVerified = user.isVerified;
     this.verificationToken = user.verificationToken;
     this.createdAt = user.createdAt;
+    this.updatedAt = user.updatedAt;
   }
 
   toDTO(): UserDTO {
@@ -31,6 +33,7 @@ export class UserVO {
       isVerified: this.isVerified,
       verificationToken: this.verificationToken,
       createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     };
   }
 
