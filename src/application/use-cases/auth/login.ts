@@ -15,9 +15,7 @@ export class LoginUseCase {
   ) {}
 
   async execute(email: string, password: string): Promise<AuthPayload> {
-    console.log("email", email);
     const user = await this.userRepository.findByEmail(email);
-    console.log("usecase", user);
     if (!user) {
       throw new InvalidCredentialsError();
     }
@@ -51,6 +49,7 @@ export class LoginUseCase {
         createdAt: user.createdAt,
         firstname: user.firstname,
         lastname: user.lastname,
+        updatedAt: user.updatedAt,
       },
     };
   }

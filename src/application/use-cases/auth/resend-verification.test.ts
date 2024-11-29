@@ -26,6 +26,7 @@ describe("ResendVerificationEmailUseCase", () => {
       isVerified: false,
       verificationToken: "old-token",
       createdAt: new Date(),
+      updatedAt: new Date(),
       firstname: "Test",
       lastname: "User",
     });
@@ -43,6 +44,7 @@ describe("ResendVerificationEmailUseCase", () => {
       email: "test@example.com",
       password: "hashedPassword",
       isVerified: true,
+      updatedAt: new Date(),
       createdAt: new Date(),
       firstname: "Test",
       lastname: "User",

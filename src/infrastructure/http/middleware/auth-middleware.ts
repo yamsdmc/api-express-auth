@@ -13,24 +13,19 @@ export const authMiddleware = (
     next: NextFunction
   ): Promise<void> => {
     try {
-      console.log("authMiddleware");
       const token = req.header("Authorization")?.replace("Bearer ", "");
       if (!token) {
-        console.log("No token provided");
         res.status(401).json({ message: "No token provided" });
         return;
       }
 
       const isBlacklisted = await blacklistService.isBlacklisted(token);
       if (isBlacklisted) {
-        console.log("InvalidTokenError");
         throw new InvalidTokenError();
       }
 
       const userId = tokenService.verifyToken(token);
-      console.log({ userId });
       if (!userId) {
-        console.log("InvalidTokenError");
         throw new TokenExpiredError();
       }
 

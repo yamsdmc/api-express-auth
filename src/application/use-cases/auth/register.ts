@@ -29,7 +29,6 @@ export class RegisterUseCase {
 
     const hashedPassword = await this.passwordService.hash(password);
     const verificationToken = crypto.randomUUID();
-    console.log({ verificationToken });
 
     const user = await this.userRepository.create({
       id: crypto.randomUUID(),

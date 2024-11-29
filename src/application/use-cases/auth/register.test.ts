@@ -29,7 +29,12 @@ describe("RegisterUseCase", () => {
   });
 
   it("should register a new user successfully", async () => {
-    const result = await useCase.execute("test@example.com", "password123");
+    const result = await useCase.execute(
+      "test@example.com",
+      "password123",
+      "yamin",
+      "Gherbi"
+    );
 
     expect(result.user.email).toBe("test@example.com");
     expect(result.accessToken).toBeDefined();
@@ -39,10 +44,10 @@ describe("RegisterUseCase", () => {
   });
 
   it("should throw error if email already exists", async () => {
-    await useCase.execute("test@example.com", "password123");
+    await useCase.execute("test@example.com", "password123", "yamin", "Gherbi");
 
     await expect(
-      useCase.execute("test@example.com", "newpassword")
+      useCase.execute("test@example.com", "newpassword", "yamin", "Gherbi")
     ).rejects.toThrow("Email already exists");
   });
 });

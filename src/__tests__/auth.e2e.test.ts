@@ -78,8 +78,6 @@ describe("Auth API", () => {
           .post("/api/auth/resend-verification")
           .send({ email: testUser.email });
 
-        console.log("Resend Response:", res.body); // Pour déboguer
-
         expect(res.status).toBe(200);
         expect(res.body.message).toBe("Verification email sent");
       });

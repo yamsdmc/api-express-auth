@@ -21,10 +21,8 @@ export class GetListingByIdUseCase {
       await this.productListingRepository.countListingsForUser(
         listing.sellerId
       );
-    console.log(listing.sellerId);
     const seller = await this.userRepository.findById(listing.sellerId);
 
-    console.log(seller);
     return new UserListing(
       listing,
       countListingsForUser,

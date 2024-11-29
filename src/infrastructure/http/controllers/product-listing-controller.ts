@@ -56,7 +56,6 @@ export class ProductListingController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    console.log("createListing");
     try {
       const sellerId = req.userId;
       const listing = await this.createProductListingUseCase.execute(
@@ -77,7 +76,6 @@ export class ProductListingController {
     try {
       const sellerId = req.userId;
       const listings = await this.getSellerListingsUseCase.execute(sellerId);
-      console.log(listings, null, 2);
       res.json(listings);
     } catch (error) {
       next(error);
@@ -140,7 +138,6 @@ export class ProductListingController {
   ): Promise<void> {
     try {
       const { id } = req.params;
-      console.log("getListingById -> id", id);
       const listing = await this.getListingByIdUseCase.execute(id);
       res.json(listing);
     } catch (error) {

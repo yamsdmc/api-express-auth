@@ -30,6 +30,7 @@ describe("GetListingByIdUseCase", () => {
       email: "test@example.com",
       password: "hashedPassword",
       isVerified: true,
+      updatedAt: new Date(),
       createdAt: new Date(),
       firstname: "Test",
       lastname: "User",
@@ -49,6 +50,7 @@ describe("GetListingByIdUseCase", () => {
       isVerified: true,
       createdAt: new Date(),
       firstname: "Test",
+      updatedAt: new Date(),
       lastname: "User",
     });
     const listing = await useCase.execute(existingListingId);

@@ -22,7 +22,6 @@ export class AuthController {
   ) {}
 
   async register(req: Request, res: Response): Promise<void> {
-    console.log("AuthController -> register");
     try {
       const { email, password, firstname, lastname } = req.body;
 
@@ -34,7 +33,6 @@ export class AuthController {
       );
       res.status(201).json(result);
     } catch (error: any) {
-      console.log("AuthController -> register (error)", { error });
       res.status(error.status || 400).json({ message: error.message });
     }
   }
@@ -88,7 +86,6 @@ export class AuthController {
       await this.resendVerificationEmailUseCase.execute(email);
       res.status(200).json({ message: "Verification email sent" });
     } catch (error) {
-      console.log("AuthController -> resendVerification -> error", error);
       if (error instanceof EmailAlreadyVerifiedError) {
         res.status(error.status).json({
           code: error.code,

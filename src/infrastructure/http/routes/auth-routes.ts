@@ -48,12 +48,10 @@ export const authRouter = (
    *             schema:
    *               $ref: '#/components/schemas/Error'
    */
-  console.log("Before validation");
   router.post(
     "/register",
     authLimiter,
     (req, res, next) => {
-      console.log(req.body);
       console.log(
         `Registration request received at ${new Date().toISOString()} from ${req.ip}`
       );

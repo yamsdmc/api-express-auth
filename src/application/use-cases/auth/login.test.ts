@@ -70,6 +70,7 @@ describe("LoginUseCase", () => {
       password: await passwordService.hash("password123"),
       isVerified: false,
       createdAt: new Date(),
+      updatedAt: new Date(),
       firstname: "Test",
       lastname: "User",
     });
