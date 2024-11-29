@@ -39,7 +39,11 @@ export class InMemoryUserRepository implements UserRepository {
     const index = this.users.findIndex((user) => user.id === id);
     if (index === -1) throw new Error("User not found");
 
-    this.users[index] = { ...this.users[index], ...data };
+    this.users[index] = {
+      ...this.users[index],
+      ...data,
+      updatedAt: new Date(),
+    };
     return this.users[index];
   }
 

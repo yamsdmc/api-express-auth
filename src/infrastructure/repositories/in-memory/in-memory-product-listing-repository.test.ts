@@ -87,7 +87,7 @@ describe("InMemoryProductListingRepository", () => {
 
     it("should update product data", async () => {
       const created = await repository.create(mockListing);
-      console.log(created);
+
       const updated = await repository.update(
         created.id!,
         createValidProductListing({

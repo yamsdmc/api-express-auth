@@ -30,7 +30,6 @@ export class InMemoryProductListingRepository
     };
 
     this.listings.push(newListing);
-    console.log(this.listings.map((listing) => listing.createdAt));
     return newListing;
   }
 

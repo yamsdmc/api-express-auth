@@ -41,7 +41,6 @@ describe("GetSellerListingsUseCase", () => {
       const listings = await useCase.execute(sellerId);
 
       expect(listings).toHaveLength(2);
-      console.log(listings);
       expect(listings.every((listing) => listing.sellerId === sellerId)).toBe(
         true
       );
