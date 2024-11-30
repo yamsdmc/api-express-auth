@@ -1,4 +1,9 @@
 import { z } from "zod";
+import {
+  ProductCondition,
+  ProductConditionType,
+} from "@domain/value-concepts/ProductCondition";
+import { ProductCategory } from "@domain/value-concepts/ProductCategory";
 
 export const registerSchema = z.object({
   email: z
@@ -81,3 +86,17 @@ export const updateUserSchema = z
     message:
       "At least one field (firstname, lastname, or password) must be provided",
   });
+
+export const listingFiltersSchema = z.object({
+  category: z
+    .enum(Object.values(ProductCategory) as [string, ...string[]])
+    .optional(),
+  minPrice: z.number().min(0).optional(),
+  maxPrice: z.number().min(0).optional(),
+  condition: z
+    .enum(Object.values(ProductCondition) as [string, ...string[]])
+    .optional(),
+  query: z.string().optional(),
+  offset: z.number().min(0).optional(),
+  limit: z.number().min(1).optional(),
+});

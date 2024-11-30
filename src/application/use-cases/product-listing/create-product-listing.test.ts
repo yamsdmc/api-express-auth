@@ -1,10 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { CreateProductListingUseCase } from "@application/use-cases/product-listing/create-product-listing";
 import { InMemoryProductListingRepository } from "@infrastructure/repositories/in-memory/in-memory-product-listing-repository";
-import { ProductCondition } from "@domain/value-concepts/ProductCondition";
-import { ProductEntity } from "@domain/entities/Product";
 import { ProductListingEntity } from "@domain/entities/ProductListing";
-import { fakeBase64 } from "@infrastructure/repositories/in-memory/fake-base64";
 import { createValidProductListing } from "./factories/productListing.factory.js";
 
 describe("CreateProductListingUseCase", () => {

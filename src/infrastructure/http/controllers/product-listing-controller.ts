@@ -10,6 +10,7 @@ import {
 } from "@application/use-cases/product-listing/get-listings";
 import { ProductCategoryType } from "@domain/value-concepts/ProductCategory";
 import { ListingFilters } from "@domain/value-concepts/ListingFilters";
+import { ProductConditionType } from "@domain/value-concepts/ProductCondition";
 
 export class ProductListingController {
   constructor(
@@ -38,6 +39,10 @@ export class ProductListingController {
           : undefined,
         minPrice: req.query.minPrice ? Number(req.query.minPrice) : undefined,
         maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined,
+        condition: req.query.condition
+          ? (req.query.condition as ProductConditionType)
+          : undefined,
+        query: req.query.query ? (req.query.query as string) : undefined,
       };
 
       const listings = await this.getListingsUseCase.execute({

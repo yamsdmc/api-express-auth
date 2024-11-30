@@ -3,6 +3,8 @@ import { ProductListingController } from "../controllers/product-listing-control
 import { authMiddleware } from "../middleware/auth-middleware";
 import { TokenService } from "@application/services/token-service";
 import { TokenBlacklistService } from "@domain/services/token-blacklist";
+import { validate } from "@infrastructure/http/middleware/validate";
+import { listingFiltersSchema } from "@application/validators/auth-validator";
 
 export const productListingRouter = (
   controller: ProductListingController,
@@ -12,9 +14,9 @@ export const productListingRouter = (
   const router = Router();
   const auth = authMiddleware(tokenService, blacklistService);
 
-  router.get("/", async (req, res, next) => {
-    await controller.getListings(req, res, next);
-  });
+  router.get("/", validate(listingFiltersSchema), (req, res, next) =>
+    controller.getListings(req, res, next)
+  );
 
   /**
    * @openapi

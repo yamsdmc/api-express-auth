@@ -1,6 +1,6 @@
 import { ProductListingEntity } from "@domain/entities/ProductListing";
 import { ProductCondition } from "@domain/value-concepts/ProductCondition";
-import { fakeBase64 } from "@infrastructure/repositories/in-memory/fake-base64";
+import { iphoneBase64 } from "@infrastructure/repositories/in-memory/fake-base64";
 
 export function createValidProductListing(
   override: Partial<ProductListingEntity> = {}
@@ -24,7 +24,7 @@ export function createValidProduct(override = {}) {
     price: 500,
     category: "electronics",
     condition: ProductCondition.GOOD,
-    images: fakeBase64,
+    images: iphoneBase64,
     ...override,
   };
 }
