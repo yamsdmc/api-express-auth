@@ -17,14 +17,26 @@ export const CONFIG = {
   },
   APP: {
     URL: process.env.APP_URL || "http://localhost:3000",
-    NAME: "YourApp",
+    NAME: "XpatMart",
   },
   EMAIL: {
     HOST: process.env.EMAIL_HOST || "smtp.example.com",
     PORT: parseInt(process.env.EMAIL_PORT || "587"),
     USER: process.env.EMAIL_USER || "your-email@example.com",
     PASSWORD: process.env.EMAIL_PASSWORD || "your-password",
-    FROM: process.env.EMAIL_FROM || "noreply@yourapp.com",
+    FROM: process.env.EMAIL_FROM || "xpatmart@gmail.com",
+  },
+  DATABASE: {
+    POSTGRESQL: {
+      HOST: process.env.DB_HOST || "localhost",
+      PORT: parseInt(process.env.DB_PORT || "5432"),
+      USER: process.env.DB_USER || "postgres",
+      PASSWORD: process.env.DB_PASSWORD || "postgres",
+      NAME: process.env.DB_NAME || "marketplace",
+      SSL: process.env.DB_SSL === "true",
+      MAX_CONNECTIONS: parseInt(process.env.DB_MAX_CONNECTIONS || "20"),
+      IDLE_TIMEOUT: parseInt(process.env.DB_IDLE_TIMEOUT || "30000"),
+    },
   },
 };
 
