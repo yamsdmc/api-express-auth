@@ -5,6 +5,9 @@ import { BcryptPasswordService } from "@infrastructure/services/bcrypt-password-
 import { JwtTokenService } from "@infrastructure/services/jwt-token-service";
 import { InMemoryRefreshTokenRepository } from "@infrastructure/repositories/in-memory/in-memory-refresh-token-repository";
 import { ConsoleEmailService } from "@infrastructure/services/console-email-service";
+import { VerificationCodeService } from "@application/services/verification-code-service";
+import { VerificationCodeRepository } from "@domain/repositories/verification-code-repository";
+import { InMemoryVerificationCodeRepository } from "@infrastructure/repositories/in-memory/in-memory-verification-code-repository";
 
 describe("RegisterUseCase", () => {
   let useCase: RegisterUseCase;
@@ -12,19 +15,25 @@ describe("RegisterUseCase", () => {
   let passwordService: BcryptPasswordService;
   let tokenService: JwtTokenService;
   let refreshTokenRepository: InMemoryRefreshTokenRepository;
+  let verificationCodeRepository: VerificationCodeRepository;
 
   beforeEach(() => {
     userRepository = new InMemoryUserRepository();
     passwordService = new BcryptPasswordService();
     tokenService = new JwtTokenService();
     refreshTokenRepository = new InMemoryRefreshTokenRepository();
+    verificationCodeRepository = new InMemoryVerificationCodeRepository();
     const emailService = new ConsoleEmailService();
+    const verifyCodeService = new VerificationCodeService(
+      verificationCodeRepository
+    );
     useCase = new RegisterUseCase(
       userRepository,
       passwordService,
       tokenService,
       refreshTokenRepository,
-      emailService
+      emailService,
+      verifyCodeService
     );
   });
 

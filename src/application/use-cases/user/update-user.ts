@@ -11,7 +11,7 @@ export interface UpdateUserData {
   lastname?: string;
   password?: string;
   isVerified?: boolean;
-  verificationToken?: null | string;
+  verificationCode?: null | string;
 }
 
 export class UpdateUserUseCase {

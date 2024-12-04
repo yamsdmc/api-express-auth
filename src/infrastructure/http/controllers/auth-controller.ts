@@ -69,8 +69,13 @@ export class AuthController {
     }
   }
   async verifyEmail(req: Request, res: Response): Promise<void> {
+    const userId = req.userId;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
     try {
-      await this.verifyEmailUseCase.execute(req.body.token);
+      await this.verifyEmailUseCase.execute(req.body.code, userId);
       res.status(200).json({ message: "Email verified successfully" });
     } catch (error) {
       if (error instanceof InvalidTokenError) {

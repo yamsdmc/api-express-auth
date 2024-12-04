@@ -5,7 +5,6 @@ export interface UserDTO {
   email: string;
   password: string;
   isVerified: boolean;
-  verificationToken?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -46,7 +46,7 @@ export const logoutSchema = z.object({
 });
 
 export const verifyEmailSchema = z.object({
-  token: z.string().uuid("Invalid verification token"),
+  code: z.string(),
 });
 
 export const resendVerificationSchema = z.object({

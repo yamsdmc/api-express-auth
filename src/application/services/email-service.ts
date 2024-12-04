@@ -1,3 +1,8 @@
+import { UserVerificationDto } from "@domain/DTO/user-email-verification.dto";
+
 export interface EmailService {
-  sendVerificationEmail(email: string, token: string): Promise<void>;
+  sendVerificationEmail(
+    userVerification: UserVerificationDto,
+    token: string
+  ): Promise<void>;
 }

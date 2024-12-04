@@ -6,6 +6,8 @@ import { UserAlreadyExistsError } from "@domain/errors";
 import { RefreshTokenRepository } from "@domain/repositories/refresh-token-repository";
 import { CONFIG } from "../../../config";
 import { EmailService } from "@application/services/email-service";
+import { VerificationCodeService } from "@application/services/verification-code-service";
+import { VerificationCodeType } from "@domain/enums/verification-code-type";
 
 export class RegisterUseCase {
   constructor(
@@ -13,7 +15,8 @@ export class RegisterUseCase {
     private passwordService: PasswordService,
     private tokenService: TokenService,
     private readonly refreshTokenRepository: RefreshTokenRepository,
-    private readonly emailService: EmailService
+    private readonly emailService: EmailService,
+    private readonly verificationCodeService: VerificationCodeService
   ) {}
 
   async execute(
@@ -28,21 +31,27 @@ export class RegisterUseCase {
     }
 
     const hashedPassword = await this.passwordService.hash(password);
-    const verificationToken = crypto.randomUUID();
 
     const user = await this.userRepository.create({
       id: crypto.randomUUID(),
       email,
       password: hashedPassword,
       isVerified: false,
-      verificationToken,
       createdAt: new Date(),
       updatedAt: new Date(),
       firstname,
       lastname,
     });
 
-    await this.emailService.sendVerificationEmail(email, verificationToken);
+    const verificationCode = await this.verificationCodeService.generateCode(
+      user.id!,
+      VerificationCodeType.EMAIL_VERIFICATION
+    );
+
+    await this.emailService.sendVerificationEmail(
+      { email, firstname },
+      verificationCode
+    );
 
     const accessToken = this.tokenService.generateToken(user.id!);
     const refreshToken = crypto.randomUUID();

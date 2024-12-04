@@ -13,7 +13,9 @@ import { VerifyEmailUseCase } from "@application/use-cases/auth/verify-email";
 import { LogoutUseCase } from "@application/use-cases/auth/logout";
 import { InMemoryTokenBlacklist } from "@infrastructure/services/token-blacklist";
 import { ResendVerificationEmailUseCase } from "@application/use-cases/auth/resend-verification";
-import { NodemailerService } from "@infrastructure/services/nodemailer-service";
+import { MailgunService } from "@infrastructure/services/mailgun-service";
+import { InMemoryVerificationCodeRepository } from "@infrastructure/repositories/in-memory/in-memory-verification-code-repository";
+import { VerificationCodeService } from "@application/services/verification-code-service";
 
 describe("AuthController", () => {
   let controller: AuthController;
@@ -32,13 +34,21 @@ describe("AuthController", () => {
     );
     const emailService = new ConsoleEmailService();
     const blackListService = new InMemoryTokenBlacklist();
-    const verifyEmailUseCase = new VerifyEmailUseCase(userRepository);
+    const verificationCodeRepository = new InMemoryVerificationCodeRepository();
+    const verificationCodeService = new VerificationCodeService(
+      verificationCodeRepository
+    );
+    const verifyEmailUseCase = new VerifyEmailUseCase(
+      userRepository,
+      verificationCodeService
+    );
     registerUseCase = new RegisterUseCase(
       userRepository,
       passwordService,
       tokenService,
       refreshTokenRepository,
-      emailService
+      emailService,
+      verificationCodeService
     );
     const loginUseCase = new LoginUseCase(
       userRepository,
@@ -53,10 +63,11 @@ describe("AuthController", () => {
     const mailerService =
       process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test"
         ? new ConsoleEmailService()
-        : new NodemailerService();
+        : new MailgunService();
     const resendVerificationEmailUseCase = new ResendVerificationEmailUseCase(
       userRepository,
-      mailerService
+      mailerService,
+      verificationCodeService
     );
     controller = new AuthController(
       registerUseCase,

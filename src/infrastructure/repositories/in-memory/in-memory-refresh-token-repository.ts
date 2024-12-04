@@ -1,4 +1,4 @@
-import { RefreshTokenRepository } from "../../../domain/repositories/refresh-token-repository";
+import { RefreshTokenRepository } from "@domain/repositories/refresh-token-repository";
 
 export class InMemoryRefreshTokenRepository implements RefreshTokenRepository {
   private tokens: Map<string, { userId: string; expiresAt: Date }> = new Map();

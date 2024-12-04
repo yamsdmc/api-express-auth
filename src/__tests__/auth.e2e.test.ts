@@ -3,9 +3,10 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { createApp } from "../app";
 import { Express } from "express";
 import * as console from "node:console";
+import { VerificationCodeType } from "@domain/enums/verification-code-type";
 
 describe("Auth API", () => {
-  const { app, userRepository } = createApp();
+  const { app, userRepository, verificationCodeRepository } = createApp();
 
   const testUser = {
     email: "test@example.com",
@@ -16,9 +17,14 @@ describe("Auth API", () => {
 
   let accessToken: string;
   let refreshToken: string;
-  let verificationToken: string;
+  let userId: string;
+  let verificationCode: string;
 
   describe("Registration and Email Verification Flow", () => {
+    beforeEach(async () => {
+      await userRepository.reset();
+      await verificationCodeRepository.clear();
+    });
     it("should register a new user", async () => {
       const res = await insertUser(app, testUser);
 
@@ -30,6 +36,7 @@ describe("Auth API", () => {
 
       accessToken = res.body.accessToken;
       refreshToken = res.body.refreshToken;
+      userId = res.body.user.id;
     });
 
     it("should not allow login before email verification", async () => {
@@ -41,24 +48,32 @@ describe("Auth API", () => {
     });
 
     it("should verify email", async () => {
-      await insertUser(app, testUser);
+      const registerRes = await insertUser(app, testUser);
+      userId = registerRes.body.user.id;
+      accessToken = registerRes.body.accessToken;
 
-      const user = await userRepository.findByEmail(testUser.email);
-
-      verificationToken = user?.verificationToken!;
+      const verificationCodeEntity =
+        await verificationCodeRepository.findLatestByUserId(
+          userId,
+          VerificationCodeType.EMAIL_VERIFICATION
+        );
+      verificationCode = verificationCodeEntity!.code;
 
       const res = await request(app)
         .post("/api/auth/verify-email")
-        .send({ token: verificationToken });
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({ code: verificationCode });
 
       expect(res.status).toBe(200);
     });
 
     it("should login successfully after verification", async () => {
-      await insertUser(app, testUser);
-      const userRegistered = await userRepository.findByEmail(testUser.email);
+      const registerRes = await insertUser(app, testUser);
+      userId = registerRes.body.user.id;
 
-      await userRepository.update(userRegistered?.id!, { isVerified: true });
+      // Marquer l'utilisateur comme vérifié
+      await userRepository.update(userId, { isVerified: true });
+
       const res = await request(app).post("/api/auth/login").send(testUser);
 
       expect(res.status).toBe(200);
@@ -69,10 +84,11 @@ describe("Auth API", () => {
     describe("Resend Verification Email", () => {
       beforeEach(async () => {
         await userRepository.reset();
-        await insertUser(app, testUser);
-        const user = await userRepository.findByEmail(testUser.email);
-        verificationToken = user?.verificationToken!;
+        await verificationCodeRepository.clear();
+        const registerRes = await insertUser(app, testUser);
+        userId = registerRes.body.user.id;
       });
+
       it("should resend verification email", async () => {
         const res = await request(app)
           .post("/api/auth/resend-verification")
@@ -80,11 +96,17 @@ describe("Auth API", () => {
 
         expect(res.status).toBe(200);
         expect(res.body.message).toBe("Verification email sent");
+
+        // Vérifier qu'un nouveau code a été généré
+        const newCode = await verificationCodeRepository.findLatestByUserId(
+          userId,
+          VerificationCodeType.EMAIL_VERIFICATION
+        );
+        expect(newCode).toBeDefined();
       });
 
       it("should not resend if email is already verified", async () => {
-        const user = await userRepository.findByEmail(testUser.email);
-        await userRepository.update(user!.id!, { isVerified: true });
+        await userRepository.update(userId, { isVerified: true });
 
         const res = await request(app)
           .post("/api/auth/resend-verification")
@@ -93,10 +115,9 @@ describe("Auth API", () => {
         expect(res.status).toBe(400);
         expect(res.body.message).toBe("Email already verified");
       });
+
       it("should return 400 with correct error when email already verified", async () => {
-        await insertUser(app, testUser);
-        const user = await userRepository.findByEmail(testUser.email);
-        await userRepository.update(user!.id!, { isVerified: true });
+        await userRepository.update(userId, { isVerified: true });
 
         const res = await request(app)
           .post("/api/auth/resend-verification")
@@ -119,7 +140,6 @@ describe("Auth API", () => {
       });
     });
   });
-
   describe("Duplicate Registration", () => {
     it("should not register user with same email", async () => {
       await insertUser(app, testUser);

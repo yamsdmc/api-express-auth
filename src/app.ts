@@ -20,7 +20,6 @@ import { LoginUseCase } from "@application/use-cases/auth/login";
 import { RefreshTokenUseCase } from "@application/use-cases/auth/refresh-token";
 import { AuthController } from "@infrastructure/http/controllers/auth-controller";
 import { VerifyEmailUseCase } from "@application/use-cases/auth/verify-email";
-import { NodemailerService } from "@infrastructure/services/nodemailer-service";
 import { ConsoleEmailService } from "@infrastructure/services/console-email-service";
 import { ResendVerificationEmailUseCase } from "@application/use-cases/auth/resend-verification";
 import { productListingRouter } from "@infrastructure/http/routes/product-listing-routes";
@@ -38,6 +37,9 @@ import { UserController } from "@infrastructure/http/controllers/user-controller
 import { GetMeUseCase } from "@application/use-cases/user/get-me";
 import { DeleteAccountUseCase } from "@application/use-cases/user/delete-account";
 import { UpdateUserUseCase } from "@application/use-cases/user/update-user";
+import { MailgunService } from "@infrastructure/services/mailgun-service";
+import { InMemoryVerificationCodeRepository } from "@infrastructure/repositories/in-memory/in-memory-verification-code-repository";
+import { VerificationCodeService } from "@application/services/verification-code-service";
 
 interface BodyParserConfig {
   limit: string | number;
@@ -56,26 +58,37 @@ export const createApp = () => {
   app.use(bodyParser.urlencoded(parserConfig));
 
   console.log("process.env.NODE_ENV ", process.env.NODE_ENV);
+
   const userRepository = new InMemoryUserRepository();
+  const refreshTokenRepository = new InMemoryRefreshTokenRepository();
+  const verificationCodeRepository = new InMemoryVerificationCodeRepository();
+
   const passwordService = new BcryptPasswordService();
   const tokenService = new JwtTokenService();
-  const refreshTokenRepository = new InMemoryRefreshTokenRepository();
   const blacklistService = new InMemoryTokenBlacklist();
+
   const logoutUseCase = new LogoutUseCase(
     blacklistService,
     refreshTokenRepository
   );
-  const verifyEmailUseCase = new VerifyEmailUseCase(userRepository);
+  const verificationCodeService = new VerificationCodeService(
+    verificationCodeRepository
+  );
+  const verifyEmailUseCase = new VerifyEmailUseCase(
+    userRepository,
+    verificationCodeService
+  );
   const mailerService =
     process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test"
       ? new ConsoleEmailService()
-      : new NodemailerService();
+      : new MailgunService();
   const registerUseCase = new RegisterUseCase(
     userRepository,
     passwordService,
     tokenService,
     refreshTokenRepository,
-    mailerService
+    mailerService,
+    verificationCodeService
   );
   const loginUseCase = new LoginUseCase(
     userRepository,
@@ -89,7 +102,8 @@ export const createApp = () => {
   );
   const resendVerificationEmailUseCase = new ResendVerificationEmailUseCase(
     userRepository,
-    mailerService
+    mailerService,
+    verificationCodeService
   );
   const authController = new AuthController(
     registerUseCase,
@@ -182,5 +196,6 @@ export const createApp = () => {
     app,
     blacklistService,
     userRepository,
+    verificationCodeRepository,
   };
 };

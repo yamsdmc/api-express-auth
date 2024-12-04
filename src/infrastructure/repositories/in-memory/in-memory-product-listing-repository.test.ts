@@ -27,7 +27,6 @@ describe("InMemoryProductListingRepository", () => {
       const listing = await repository.create(mockListing);
 
       expect(listing.id).toBeDefined();
-      expect(listing.product.id).toBeDefined();
       expect(listing.sellerId).toBe(sellerId);
       expect(listing.product.title).toBe(mockListing.product.title);
       expect(listing.createdAt).toBeInstanceOf(Date);

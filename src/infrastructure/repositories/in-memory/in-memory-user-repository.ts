@@ -10,7 +10,6 @@ export class InMemoryUserRepository implements UserRepository {
       email: "yamsdmc@gmail.com",
       password: "$2b$10$5ZFXJiMB.sWvpDc26ryQo.DW7xdvwTTfqcV.rxQlnmDM60CoR6KCy",
       isVerified: true,
-      verificationToken: "93b159cf-95b0-4425-8490-ef5d47deb4df",
       createdAt: new Date("2024-11-27T09:34:46.147Z"),
       firstname: "Yamin",
       lastname: "Gherbi",
@@ -24,10 +23,6 @@ export class InMemoryUserRepository implements UserRepository {
 
   async reset(): Promise<void> {
     this.users = [];
-  }
-
-  async findByVerificationToken(token: string): Promise<UserDTO | null> {
-    return this.users.find((user) => user.verificationToken === token) || null;
   }
 
   async create(user: UserDTO): Promise<UserDTO> {

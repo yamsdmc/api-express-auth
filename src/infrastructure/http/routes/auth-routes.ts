@@ -97,6 +97,7 @@ export const authRouter = (
   router.post("/login", authLimiter, validate(loginSchema), (req, res) =>
     authController.login(req, res)
   );
+
   /**
    * @openapi
    * /api/auth/refresh:
@@ -206,6 +207,7 @@ export const authRouter = (
    */
   router.post(
     "/verify-email",
+    authMiddleware(tokenService, blacklistService),
     authLimiter,
     validate(verifyEmailSchema),
     (req, res) => authController.verifyEmail(req, res)

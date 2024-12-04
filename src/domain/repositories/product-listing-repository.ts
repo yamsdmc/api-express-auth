@@ -12,7 +12,7 @@ export interface ProductListingRepository {
   findBySellerId(sellerId: string): Promise<ProductListingEntity[]>;
   update(
     id: string,
-    product: Partial<ProductEntity>
+    product: Partial<ProductListingEntity>
   ): Promise<ProductListingEntity>;
   delete(id: string): Promise<void>;
   findAll(

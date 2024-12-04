@@ -9,6 +9,9 @@ import { InMemoryRefreshTokenRepository } from "@infrastructure/repositories/in-
 import { EmailNotVerifiedError } from "@domain/errors";
 import { EmailService } from "@application/services/email-service";
 import { ConsoleEmailService } from "@infrastructure/services/console-email-service";
+import { VerificationCodeService } from "@application/services/verification-code-service";
+import { VerificationCodeRepository } from "@domain/repositories/verification-code-repository";
+import { InMemoryVerificationCodeRepository } from "@infrastructure/repositories/in-memory/in-memory-verification-code-repository";
 
 describe("LoginUseCase", () => {
   let loginUseCase: LoginUseCase;
@@ -18,13 +21,18 @@ describe("LoginUseCase", () => {
   let tokenService: TokenService;
   let refreshTokenRepository: InMemoryRefreshTokenRepository;
   let emailService: EmailService;
+  let verificationCodeService: VerificationCodeService;
+  let verificationCodeRepository: VerificationCodeRepository;
 
   beforeEach(async () => {
     userRepository = new InMemoryUserRepository();
     passwordService = new BcryptPasswordService();
     tokenService = new JwtTokenService();
     refreshTokenRepository = new InMemoryRefreshTokenRepository();
-
+    verificationCodeRepository = new InMemoryVerificationCodeRepository();
+    verificationCodeService = new VerificationCodeService(
+      verificationCodeRepository
+    );
     loginUseCase = new LoginUseCase(
       userRepository,
       passwordService,
@@ -32,12 +40,14 @@ describe("LoginUseCase", () => {
       refreshTokenRepository
     );
     emailService = new ConsoleEmailService();
+
     registerUseCase = new RegisterUseCase(
       userRepository,
       passwordService,
       tokenService,
       refreshTokenRepository,
-      emailService
+      emailService,
+      verificationCodeService
     );
 
     await registerUseCase.execute(

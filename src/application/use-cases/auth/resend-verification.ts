@@ -4,11 +4,14 @@ import {
 } from "@domain/errors";
 import { EmailService } from "@application/services/email-service";
 import { UserRepository } from "@domain/repositories/user-repository";
+import { VerificationCodeService } from "@application/services/verification-code-service";
+import { VerificationCodeType } from "@domain/enums/verification-code-type";
 
 export class ResendVerificationEmailUseCase {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly emailService: EmailService
+    private readonly emailService: EmailService,
+    private readonly verificationCodeService: VerificationCodeService
   ) {}
 
   async execute(email: string): Promise<void> {
@@ -21,11 +24,14 @@ export class ResendVerificationEmailUseCase {
       throw new EmailAlreadyVerifiedError();
     }
 
-    const newVerificationToken = crypto.randomUUID();
-    await this.userRepository.update(user.id!, {
-      verificationToken: newVerificationToken,
-    });
+    const verificationCode = await this.verificationCodeService.generateCode(
+      user.id,
+      VerificationCodeType.EMAIL_VERIFICATION
+    );
 
-    await this.emailService.sendVerificationEmail(email, newVerificationToken);
+    await this.emailService.sendVerificationEmail(
+      { email, firstname: user.firstname },
+      verificationCode
+    );
   }
 }
