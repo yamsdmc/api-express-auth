@@ -1,5 +1,3 @@
-import * as console from "node:console";
-
 export class ApplicationError extends Error {
   public readonly code: string;
   public readonly status: number;

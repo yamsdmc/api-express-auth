@@ -33,9 +33,9 @@ import { UserController } from "@infrastructure/http/controllers/user-controller
 import { GetMeUseCase } from "@application/use-cases/user/get-me";
 import { DeleteAccountUseCase } from "@application/use-cases/user/delete-account";
 import { UpdateUserUseCase } from "@application/use-cases/user/update-user";
-import { MailgunService } from "@infrastructure/services/mailgun-service";
 import { VerificationCodeService } from "@application/services/verification-code-service";
 import { RepositoryFactory } from "@infrastructure/factories/repository-factory";
+import {ResendService} from "@infrastructure/services/ResendService";
 
 interface BodyParserConfig {
   limit: string | number;
@@ -80,7 +80,7 @@ export const createApp = () => {
   const mailerService =
     process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test"
       ? new ConsoleEmailService()
-      : new MailgunService();
+      : new ResendService();
   const registerUseCase = new RegisterUseCase(
     userRepository,
     passwordService,
