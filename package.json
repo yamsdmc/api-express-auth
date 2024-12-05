@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "main": "./src/index.ts",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only --require dotenv/config --require tsconfig-paths/register src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only --require tsconfig-paths/register src/index.ts",
     "build": "tsc",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "format": "prettier --write .",
-    "test:mail": "ts-node-dev -r tsconfig-paths/register src/test-send-mail.ts"
+    "test:mail": "ts-node-dev -r tsconfig-paths/register src/test-send-mail.ts",
+    "migrate": "NODE_ENV=development DATABASE_URL=postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@${DB_HOST:-localhost}:${DB_PORT:-5432}/${DB_NAME:-marketplace} node-pg-migrate --migrations-dir src/infrastructure/database/postgresql/migrations",
+    "migrate:up": "NODE_ENV=development DATABASE_URL=postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@${DB_HOST:-localhost}:${DB_PORT:-5432}/${DB_NAME:-marketplace} node-pg-migrate up --migrations-dir src/infrastructure/database/postgresql/migrations",
+    "migrate:down": "NODE_ENV=development DATABASE_URL=postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@${DB_HOST:-localhost}:${DB_PORT:-5432}/${DB_NAME:-marketplace} node-pg-migrate down --migrations-dir src/infrastructure/database/postgresql/migrations",
+    "migrate:create": "node-pg-migrate create --migrations-dir src/infrastructure/database/postgresql/migrations"
   },
   "author": "Gherbi Yamin",
   "license": "ISC",
@@ -56,6 +60,7 @@
     "nodemailer": "^6.9.16",
     "pg": "^8.13.1",
     "react-native": "0.76.3",
+    "resend": "^4.0.1",
     "zod": "^3.23.8"
   }
 }

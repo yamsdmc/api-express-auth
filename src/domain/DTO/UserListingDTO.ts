@@ -4,5 +4,6 @@ export interface UserListingDTO extends ProductListingDTO {
   user: {
     numberOfActiveLists: number;
     fullName: string;
+    createdAt: string;
   };
 }

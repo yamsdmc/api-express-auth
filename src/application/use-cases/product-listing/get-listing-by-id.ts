@@ -26,7 +26,8 @@ export class GetListingByIdUseCase {
     return new UserListing(
       listing,
       countListingsForUser,
-      new UserVO(seller!).fullName
+      new UserVO(seller!).fullName,
+      seller?.createdAt!
     ).toDTO();
   }
 }

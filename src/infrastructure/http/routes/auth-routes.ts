@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/auth-controller";
 import {
-  deleteAccountSchema,
   loginSchema,
   refreshTokenSchema,
   registerSchema,

@@ -1,9 +1,6 @@
 import express from "express";
-import { InMemoryUserRepository } from "@infrastructure/repositories/in-memory/in-memory-user-repository";
 import { JwtTokenService } from "@infrastructure/services/jwt-token-service";
 import { BcryptPasswordService } from "@infrastructure/services/bcrypt-password-service";
-import { InMemoryRefreshTokenRepository } from "@infrastructure/repositories/in-memory/in-memory-refresh-token-repository";
-import { InMemoryTokenBlacklist } from "@infrastructure/services/token-blacklist";
 import helmet from "helmet";
 import cors from "cors";
 import morgan from "morgan";
@@ -28,7 +25,6 @@ import { CreateProductListingUseCase } from "@application/use-cases/product-list
 import { GetSellerListingsUseCase } from "@application/use-cases/product-listing/get-seller-listings";
 import { UpdateProductListingUseCase } from "@application/use-cases/product-listing/update-product-listing";
 import { DeleteProductListingUseCase } from "@application/use-cases/product-listing/delete-product-listing";
-import { InMemoryProductListingRepository } from "@infrastructure/repositories/in-memory/in-memory-product-listing-repository";
 import { GetListingByIdUseCase } from "@application/use-cases/product-listing/get-listing-by-id";
 import { GetListingsUseCase } from "@application/use-cases/product-listing/get-listings";
 import bodyParser from "body-parser";
@@ -38,8 +34,8 @@ import { GetMeUseCase } from "@application/use-cases/user/get-me";
 import { DeleteAccountUseCase } from "@application/use-cases/user/delete-account";
 import { UpdateUserUseCase } from "@application/use-cases/user/update-user";
 import { MailgunService } from "@infrastructure/services/mailgun-service";
-import { InMemoryVerificationCodeRepository } from "@infrastructure/repositories/in-memory/in-memory-verification-code-repository";
 import { VerificationCodeService } from "@application/services/verification-code-service";
+import { RepositoryFactory } from "@infrastructure/factories/repository-factory";
 
 interface BodyParserConfig {
   limit: string | number;
@@ -59,13 +55,16 @@ export const createApp = () => {
 
   console.log("process.env.NODE_ENV ", process.env.NODE_ENV);
 
-  const userRepository = new InMemoryUserRepository();
-  const refreshTokenRepository = new InMemoryRefreshTokenRepository();
-  const verificationCodeRepository = new InMemoryVerificationCodeRepository();
+  const repoFactory = new RepositoryFactory("postgresql");
+  const userRepository = repoFactory.createUserRepository();
+  const refreshTokenRepository = repoFactory.createRefreshTokenRepository();
+  const verificationCodeRepository =
+    repoFactory.createVerificationCodeRepository();
+  const blacklistService = repoFactory.createTokenBlacklist();
+  const productListingRepository = repoFactory.createProductListingRepository();
 
   const passwordService = new BcryptPasswordService();
   const tokenService = new JwtTokenService();
-  const blacklistService = new InMemoryTokenBlacklist();
 
   const logoutUseCase = new LogoutUseCase(
     blacklistService,
@@ -126,7 +125,6 @@ export const createApp = () => {
     authRouter(authController, tokenService, blacklistService)
   );
 
-  const productListingRepository = new InMemoryProductListingRepository();
   const createProductListingUseCase = new CreateProductListingUseCase(
     productListingRepository
   );
