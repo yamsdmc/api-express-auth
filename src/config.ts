@@ -1,3 +1,7 @@
+require("dotenv").config({
+  path: process.env.NODE_ENV === "production" ? ".env" : ".env.local",
+});
+
 export const CONFIG = {
   JWT: {
     SECRET: process.env.JWT_SECRET || "your-secret-key", // Only for dev
@@ -28,11 +32,11 @@ export const CONFIG = {
   },
   DATABASE: {
     POSTGRESQL: {
-      HOST: process.env.DB_HOST || "localhost",
+      HOST: process.env.DB_HOST,
       PORT: parseInt(process.env.DB_PORT || "5432"),
-      USER: process.env.DB_USER || "postgres",
-      PASSWORD: process.env.DB_PASSWORD || "postgres",
-      NAME: process.env.DB_NAME || "marketplace",
+      USER: process.env.DB_USER,
+      PASSWORD: process.env.DB_PASSWORD,
+      NAME: process.env.DB_NAME,
       SSL: process.env.DB_SSL === "true",
       MAX_CONNECTIONS: parseInt(process.env.DB_MAX_CONNECTIONS || "20"),
       IDLE_TIMEOUT: parseInt(process.env.DB_IDLE_TIMEOUT || "30000"),
