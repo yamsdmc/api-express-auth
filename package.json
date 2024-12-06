@@ -2,7 +2,6 @@
   "name": "xpatmart_api",
   "version": "1.0.0",
   "main": "./src/index.ts",
-  "type": "module",
   "engines": {
     "node": ">=18.0.0"
   },

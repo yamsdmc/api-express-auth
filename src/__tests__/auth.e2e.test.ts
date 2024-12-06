@@ -3,9 +3,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { createApp } from "../app";
 import { Express } from "express";
 import { VerificationCodeType } from "@domain/enums/verification-code-type";
-import {
-  InMemoryVerificationCodeRepository
-} from "@infrastructure/repositories/in-memory/in-memory-verification-code-repository";
+import { InMemoryVerificationCodeRepository } from "@infrastructure/repositories/in-memory/in-memory-verification-code-repository";
 
 describe("Auth API", () => {
   const { app, userRepository, verificationCodeRepository } =
@@ -26,7 +24,9 @@ describe("Auth API", () => {
   describe("Registration and Email Verification Flow", () => {
     beforeEach(async () => {
       await userRepository.reset();
-      await (verificationCodeRepository as InMemoryVerificationCodeRepository).clear();
+      await (
+        verificationCodeRepository as InMemoryVerificationCodeRepository
+      ).clear();
     });
     it("should register a new user", async () => {
       const res = await insertUser(app, testUser);
@@ -87,7 +87,9 @@ describe("Auth API", () => {
     describe("Resend Verification Email", () => {
       beforeEach(async () => {
         await userRepository.reset();
-        await (verificationCodeRepository as InMemoryVerificationCodeRepository).clear();
+        await (
+          verificationCodeRepository as InMemoryVerificationCodeRepository
+        ).clear();
         const registerRes = await insertUser(app, testUser);
         userId = registerRes.body.user.id;
       });
