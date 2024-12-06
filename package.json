@@ -16,7 +16,8 @@
     "migrate": "NODE_ENV=development DATABASE_URL=postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@${DB_HOST:-localhost}:${DB_PORT:-5432}/${DB_NAME:-marketplace} node-pg-migrate --migrations-dir src/infrastructure/database/postgresql/migrations",
     "migrate:up": "NODE_ENV=development DATABASE_URL=postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@${DB_HOST:-localhost}:${DB_PORT:-5432}/${DB_NAME:-marketplace} node-pg-migrate up --migrations-dir src/infrastructure/database/postgresql/migrations",
     "migrate:down": "NODE_ENV=development DATABASE_URL=postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@${DB_HOST:-localhost}:${DB_PORT:-5432}/${DB_NAME:-marketplace} node-pg-migrate down --migrations-dir src/infrastructure/database/postgresql/migrations",
-    "migrate:create": "node-pg-migrate create --migrations-dir src/infrastructure/database/postgresql/migrations"
+    "migrate:create": "node-pg-migrate create --migrations-dir src/infrastructure/database/postgresql/migrations",
+    "migrate:prod": "env DATABASE_URL=$DATABASE_URL node-pg-migrate up --migrations-dir src/infrastructure/database/postgresql/migrations"
   },
   "author": "Gherbi Yamin",
   "license": "ISC",
