@@ -56,11 +56,6 @@ export const createApp = (storageType: StorageType) => {
   app.use(bodyParser.json(parserConfig));
   app.use(bodyParser.urlencoded(parserConfig));
 
-  app.get("/", (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.json({ message: "API is running" });
-  });
-
   console.log("process.env.NODE_ENV ", process.env.NODE_ENV);
 
   const repoFactory = new RepositoryFactory(storageType);

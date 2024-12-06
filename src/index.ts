@@ -4,6 +4,11 @@ import {validateEnvironment} from "./shared/utils/validateEnv";
 validateEnvironment()
 const { app, blacklistService } = createApp("postgresql");
 
+
+app.get('/', (req, res) => {
+  res.json({ message: 'API is running' });
+});
+
 if(process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 3000;
   const server = app.listen(PORT, () => {
@@ -24,4 +29,4 @@ if(process.env.NODE_ENV !== "production") {
 }
 
 
-export default app;
+module.exports = app;
