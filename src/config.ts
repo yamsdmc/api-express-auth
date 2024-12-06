@@ -24,11 +24,7 @@ export const CONFIG = {
     NAME: "XpatMart",
   },
   EMAIL: {
-    HOST: process.env.EMAIL_HOST || "smtp.example.com",
-    PORT: parseInt(process.env.EMAIL_PORT || "587"),
-    USER: process.env.EMAIL_USER || "your-email@example.com",
-    PASSWORD: process.env.EMAIL_PASSWORD || "your-password",
-    FROM: process.env.EMAIL_FROM || "xpatmart@gmail.com",
+    RESEND_API_KEY: process.env.RESEND_API_KEY
   },
   DATABASE: {
     POSTGRESQL: {
