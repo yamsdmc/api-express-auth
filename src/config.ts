@@ -4,10 +4,10 @@ require("dotenv").config({
 
 export const CONFIG = {
   JWT: {
-    SECRET: process.env.JWT_SECRET || "your-secret-key", // Only for dev
+    SECRET: process.env.JWT_SECRET,
     ACCESS_TOKEN_EXPIRY_SECONDS: 60 * 60, // 1h in seconds
     REFRESH_TOKEN_EXPIRY_DAYS: 7,
-    JWT_SECRET: process.env.JWT_SECRET || "your-secret-key",
+    JWT_SECRET: process.env.JWT_SECRET,
   },
   CLEANUP: {
     INTERVAL_MS: 60 * 60 * 1000, // 1h in milliseconds
@@ -20,7 +20,7 @@ export const CONFIG = {
     STANDARD_WINDOW_MINUTES: 1,
   },
   APP: {
-    URL: process.env.APP_URL || "http://localhost:3000",
+    URL: process.env.APP_URL,
     NAME: "XpatMart",
   },
   EMAIL: {
