@@ -56,6 +56,11 @@ export const createApp = (storageType: StorageType) => {
   app.use(bodyParser.json(parserConfig));
   app.use(bodyParser.urlencoded(parserConfig));
 
+  app.get("/", (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.json({ message: "API is running" });
+  });
+
   console.log("process.env.NODE_ENV ", process.env.NODE_ENV);
 
   const repoFactory = new RepositoryFactory(storageType);
@@ -184,13 +189,14 @@ export const createApp = (storageType: StorageType) => {
   app.use("/health", (_, res) => {
     res.send("OK");
   });
-  app.get("/", (req, res) => {
-    res.json({
-      message: "XpatMart API is running",
-      version: "1.0.0",
-      documentation: "/api-docs"
-    });
-  });
+  // app.get("/", (req, res) => {
+  //   res.json({
+  //     message: "XpatMart API is running",
+  //     version: "1.0.0",
+  //     documentation: "/api-docs"
+  //   });
+  // });
+
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   app.use(
     "/api/protected",

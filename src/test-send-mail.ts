@@ -1,9 +1,9 @@
-import { MailgunService } from "@infrastructure/services/mailgun-service";
+import { ResendService } from "@infrastructure/services/ResendService";
 
 async function testEmail() {
   try {
-    const mailgunService = new MailgunService();
-    await mailgunService.sendVerificationEmail(
+    const resendService = new ResendService();
+    await resendService.sendVerificationEmail(
       { email: "yamsdmc@gmail.com", firstname: "YamsDMC" },
       "test-token-123"
     );
