@@ -60,6 +60,7 @@ describe("GetListingByIdUseCase", () => {
     expect(listing.user).toEqual({
       fullName: "Test User",
       numberOfActiveLists: 1,
+      createdAt: "December 2024",
     });
   });
   it("should throw ListingNotFoundError for non-existent id", async () => {

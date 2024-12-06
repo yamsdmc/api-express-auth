@@ -5,7 +5,7 @@ import request from "supertest";
 import { Express } from "express";
 
 describe("User API", () => {
-  const { app, userRepository } = createApp();
+  const { app, userRepository } = createApp("memory");
 
   const testUser = {
     email: "test@example.com",

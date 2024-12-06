@@ -2,7 +2,7 @@ import { UserVerificationDto } from "@domain/DTO/user-email-verification.dto";
 import { EmailService } from "@application/services/email-service";
 import { generateVerificationEmailTemplate } from "@infrastructure/services/templates/verify-email-templates";
 import { Resend } from "resend";
-import {CONFIG} from "../../config";
+import { CONFIG } from "../../config";
 
 export class ResendService implements EmailService {
   private readonly resend;

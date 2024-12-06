@@ -9,7 +9,7 @@ import { PostgresqlUserRepository } from "@infrastructure/database/postgresql/re
 import { InMemoryTokenBlacklist } from "@infrastructure/services/token-blacklist";
 import { PostgresqlTokenBlacklist } from "@infrastructure/database/postgresql/repositories/PostgresqlTokenBlacklist";
 
-type StorageType = "memory" | "postgresql";
+export type StorageType = "memory" | "postgresql";
 
 export class RepositoryFactory {
   constructor(private storageType: StorageType) {}

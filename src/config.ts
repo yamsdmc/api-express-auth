@@ -24,7 +24,7 @@ export const CONFIG = {
     NAME: "XpatMart",
   },
   EMAIL: {
-    RESEND_API_KEY: process.env.RESEND_API_KEY
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
   },
   DATABASE: {
     POSTGRESQL: {

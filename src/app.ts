@@ -34,8 +34,11 @@ import { GetMeUseCase } from "@application/use-cases/user/get-me";
 import { DeleteAccountUseCase } from "@application/use-cases/user/delete-account";
 import { UpdateUserUseCase } from "@application/use-cases/user/update-user";
 import { VerificationCodeService } from "@application/services/verification-code-service";
-import { RepositoryFactory } from "@infrastructure/factories/repository-factory";
-import {ResendService} from "@infrastructure/services/ResendService";
+import {
+  RepositoryFactory,
+  StorageType,
+} from "@infrastructure/factories/repository-factory";
+import { ResendService } from "@infrastructure/services/ResendService";
 
 interface BodyParserConfig {
   limit: string | number;
@@ -47,7 +50,7 @@ const parserConfig: BodyParserConfig = {
   extended: true,
 };
 
-export const createApp = () => {
+export const createApp = (storageType: StorageType) => {
   const app = express();
 
   app.use(bodyParser.json(parserConfig));
@@ -55,7 +58,7 @@ export const createApp = () => {
 
   console.log("process.env.NODE_ENV ", process.env.NODE_ENV);
 
-  const repoFactory = new RepositoryFactory("postgresql");
+  const repoFactory = new RepositoryFactory(storageType);
   const userRepository = repoFactory.createUserRepository();
   const refreshTokenRepository = repoFactory.createRefreshTokenRepository();
   const verificationCodeRepository =

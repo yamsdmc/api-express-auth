@@ -1,6 +1,6 @@
 import { createApp } from "./app";
 
-const { app, blacklistService } = createApp();
+const { app, blacklistService } = createApp("postgresql");
 
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
