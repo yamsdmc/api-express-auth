@@ -2,9 +2,6 @@
   "name": "xpatmart_api",
   "version": "1.0.0",
   "main": "./src/index.ts",
-  "engines": {
-    "node": ">=18.0.0"
-  },
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only --require tsconfig-paths/register src/index.ts",
     "build": "tsc && tsc-alias",
