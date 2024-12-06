@@ -8,6 +8,7 @@ export const validateEnvironment = () => {
     "DB_USER",
     "DB_PASSWORD",
     "DB_NAME",
+    "PORT"
   ];
 
   const missingEnvVars = requiredEnvVars.filter(
