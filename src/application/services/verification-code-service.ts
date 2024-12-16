@@ -1,5 +1,6 @@
 import { VerificationCodeRepository } from "@domain/repositories/verification-code-repository";
 import { VerificationCodeType } from "@domain/enums/verification-code-type";
+import crypto from 'crypto';
 
 export class VerificationCodeService {
   constructor(private verificationCodeRepository: VerificationCodeRepository) {}

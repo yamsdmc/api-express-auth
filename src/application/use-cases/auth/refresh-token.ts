@@ -1,6 +1,7 @@
 import { TokenPair } from "@domain/auth";
 import { TokenService } from "../../services/token-service";
 import { RefreshTokenRepository } from "@domain/repositories/refresh-token-repository";
+import crypto from 'crypto';
 
 export class RefreshTokenUseCase {
   constructor(

@@ -7,6 +7,7 @@ import {
   PaginatedResult,
   PaginationParams,
 } from "@domain/value-concepts/Pagination";
+import crypto from 'crypto';
 
 export class PostgresqlProductListingRepository
   implements ProductListingRepository
