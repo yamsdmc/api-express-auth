@@ -5,7 +5,7 @@ import { EmailNotVerifiedError, InvalidCredentialsError } from "@domain/errors";
 import { TokenService } from "../../services/token-service";
 import { RefreshTokenRepository } from "@domain/repositories/refresh-token-repository";
 import { CONFIG } from "../../../config";
-import crypto from 'crypto';
+import crypto from "crypto";
 
 export class LoginUseCase {
   constructor(

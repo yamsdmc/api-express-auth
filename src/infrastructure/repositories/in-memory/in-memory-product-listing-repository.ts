@@ -15,7 +15,7 @@ import {
 import { ProductCategory } from "@domain/value-concepts/ProductCategory";
 import { ProductCondition } from "@domain/value-concepts/ProductCondition";
 import { fakeUserId } from "@infrastructure/repositories/in-memory/in-memory-user-repository";
-import crypto from 'crypto';
+import crypto from "crypto";
 
 export class InMemoryProductListingRepository
   implements ProductListingRepository

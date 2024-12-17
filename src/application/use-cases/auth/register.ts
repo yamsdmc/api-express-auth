@@ -8,7 +8,7 @@ import { CONFIG } from "../../../config";
 import { EmailService } from "@application/services/email-service";
 import { VerificationCodeService } from "@application/services/verification-code-service";
 import { VerificationCodeType } from "@domain/enums/verification-code-type";
-import crypto from 'crypto';
+import crypto from "crypto";
 
 export class RegisterUseCase {
   constructor(
