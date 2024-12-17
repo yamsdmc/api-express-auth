@@ -2,7 +2,6 @@ export const validateEnvironment = () => {
   const requiredEnvVars = [
     "NODE_ENV",
     "JWT_SECRET",
-    "FRONTEND_URL",
     "RESEND_API_KEY",
     "DB_HOST",
     "DB_USER",
