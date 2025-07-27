@@ -12,7 +12,7 @@ import {
   PaginatedResult,
   PaginationParams,
 } from "@domain/value-concepts/Pagination";
-import { ProductCategory } from "@domain/value-concepts/ProductCategory";
+import { ProductCategory, ProductSubcategory } from "@domain/value-concepts/ProductCategory";
 import { ProductCondition } from "@domain/value-concepts/ProductCondition";
 import { fakeUserId } from "@infrastructure/repositories/in-memory/in-memory-user-repository";
 import crypto from "crypto";
@@ -84,6 +84,9 @@ export class InMemoryProductListingRepository
   ): Promise<PaginatedResult<ProductListingEntity>> {
     const listingsFiltered = this.listings.filter((listing) => {
       if (filters?.category && listing.product.category !== filters.category) {
+        return false;
+      }
+      if (filters?.subcategory && listing.product.subcategory !== filters.subcategory) {
         return false;
       }
       if (filters?.minPrice && listing.product.price < filters.minPrice) {
@@ -166,6 +169,7 @@ export class InMemoryProductListingRepository
           "iPhone 13 Pro in excellent condition, graphite color. Sold with original charger and protective case. Battery health at 89%. Unlocked for all carriers.",
         price: 699,
         category: ProductCategory.ELECTRONICS,
+        subcategory: "smartphones_tablets" as any,
         condition: ProductCondition.GOOD,
         images: iphoneBase64,
       },
@@ -175,6 +179,7 @@ export class InMemoryProductListingRepository
           "Giant Trance X 29 2022 full suspension mountain bike, size L. Shimano XT drivetrain, hydraulic disc brakes. Perfect condition, recently serviced.",
         price: 2200,
         category: ProductCategory.SPORTS,
+        subcategory: "sports_equipment" as any,
         condition: ProductCondition.FAIR,
         images: [giantCycleBase64],
       },
@@ -184,6 +189,7 @@ export class InMemoryProductListingRepository
           "PS5 Standard Edition with Blu-ray drive. Comes with 2 DualSense controllers and 3 games (Spider-Man, God of War, Horizon). Under warranty until 2025.",
         price: 450,
         category: ProductCategory.ELECTRONICS,
+        subcategory: "gaming" as any,
         condition: ProductCondition.GOOD,
         images: [ps5Base64],
       },
@@ -193,6 +199,7 @@ export class InMemoryProductListingRepository
           "Handcrafted solid oak dining table. Dimensions: 200x90cm. Seats 8 people. Some signs of use but in very good overall condition.",
         price: 580,
         category: ProductCategory.FURNITURE,
+        subcategory: "kitchen_dining" as any,
         condition: ProductCondition.GOOD,
         images: [solidDiningBase64],
       },
@@ -202,6 +209,7 @@ export class InMemoryProductListingRepository
           "White IKEA Billy bookcase, 80x28x202cm. Assembled once then disassembled, stored in original box. Like new condition, all mounting hardware included.",
         price: 45,
         category: ProductCategory.FURNITURE,
+        subcategory: "living_room" as any,
         condition: ProductCondition.LIKE_NEW,
         images: [ikeaBillyBase64],
       },

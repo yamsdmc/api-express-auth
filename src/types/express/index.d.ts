@@ -1,5 +1,10 @@
 declare namespace Express {
   export interface Request {
-    userId: string;
+    user?: {
+      id: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+    };
   }
 }

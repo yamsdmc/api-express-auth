@@ -7,7 +7,9 @@ import { GetListingByIdUseCase } from "@application/use-cases/product-listing/ge
 import { UpdateProductListingUseCase } from "@application/use-cases/product-listing/update-product-listing";
 import { DeleteProductListingUseCase } from "@application/use-cases/product-listing/delete-product-listing";
 import { ProductCondition } from "@domain/value-concepts/ProductCondition";
+import { ProductCategory, ProductSubcategory } from "@domain/value-concepts/ProductCategory";
 import { GetListingsUseCase } from "@application/use-cases/product-listing/get-listings";
+import { createValidProduct } from "@application/use-cases/product-listing/factories/productListing.factory";
 
 describe("ProductListingController", () => {
   let controller: ProductListingController;
@@ -21,15 +23,19 @@ describe("ProductListingController", () => {
   let mockResponse: Partial<Response>;
   let mockNext: any;
 
-  const mockProduct = {
+  const mockProduct = createValidProduct({
     title: "iPhone 12",
-    description:
-      "This is a valid description that meets the minimum length requirement",
+    description: "This is a valid description that meets the minimum length requirement",
     price: 500,
-    category: "electronics",
+    category: ProductCategory.ELECTRONICS,
+    subcategory: ProductSubcategory.SMARTPHONES_TABLETS,
     condition: ProductCondition.GOOD,
-    images: ["image1.jpg"],
+  });
+
+  const mockProductListing = {
+    ...mockProduct,
     location: "Paris",
+    phoneNumber: "+33123456789",
   };
 
   beforeEach(() => {
@@ -52,6 +58,7 @@ describe("ProductListingController", () => {
     mockDeleteUseCase = {
       execute: vi.fn(),
     } as unknown as DeleteProductListingUseCase;
+    
     mockGetListingsUseCase = {
       execute: vi.fn(),
     } as unknown as GetListingsUseCase;
@@ -78,12 +85,17 @@ describe("ProductListingController", () => {
     beforeEach(() => {
       mockRequest = {
         userId: "user-123",
-        body: mockProduct,
+        body: mockProductListing,
       };
     });
 
     it("should create listing successfully", async () => {
-      const expectedListing = { id: "listing-123", ...mockProduct };
+      const expectedListing = { 
+        id: "listing-123", 
+        product: mockProduct,
+        sellerId: "user-123",
+        ...mockProductListing 
+      };
       mockCreateUseCase.execute = vi.fn().mockResolvedValue(expectedListing);
 
       await controller.createListing(
@@ -94,7 +106,7 @@ describe("ProductListingController", () => {
 
       expect(mockCreateUseCase.execute).toHaveBeenCalledWith(
         "user-123",
-        mockProduct
+        mockProductListing
       );
       expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith(expectedListing);
@@ -122,7 +134,12 @@ describe("ProductListingController", () => {
     });
 
     it("should return listing successfully", async () => {
-      const expectedListing = { id: "listing-123", ...mockProduct };
+      const expectedListing = { 
+        id: "listing-123", 
+        product: mockProduct,
+        sellerId: "user-123",
+        ...mockProductListing 
+      };
       mockGetListingByIdUseCase.execute = vi
         .fn()
         .mockResolvedValue(expectedListing);
@@ -162,8 +179,18 @@ describe("ProductListingController", () => {
 
     it("should return seller listings successfully", async () => {
       const expectedListings = [
-        { id: "listing-1", ...mockProduct },
-        { id: "listing-2", ...mockProduct },
+        { 
+          id: "listing-1", 
+          product: mockProduct,
+          sellerId: "user-123",
+          ...mockProductListing 
+        },
+        { 
+          id: "listing-2", 
+          product: createValidProduct({ title: "iPad Pro" }),
+          sellerId: "user-123",
+          ...mockProductListing 
+        },
       ];
       mockGetSellerListingsUseCase.execute = vi
         .fn()
@@ -187,15 +214,18 @@ describe("ProductListingController", () => {
       mockRequest = {
         userId: "user-123",
         params: { id: "listing-123" },
-        body: { price: 600 },
+        body: { 
+          product: createValidProduct({ price: 600 })
+        },
       };
     });
 
     it("should update listing successfully", async () => {
       const expectedListing = {
         id: "listing-123",
-        ...mockProduct,
-        price: 600,
+        product: createValidProduct({ price: 600 }),
+        sellerId: "user-123",
+        ...mockProductListing,
       };
       mockUpdateUseCase.execute = vi.fn().mockResolvedValue(expectedListing);
 
@@ -208,7 +238,7 @@ describe("ProductListingController", () => {
       expect(mockUpdateUseCase.execute).toHaveBeenCalledWith(
         "listing-123",
         "user-123",
-        { price: 600 }
+        { product: createValidProduct({ price: 600 }) }
       );
       expect(mockResponse.json).toHaveBeenCalledWith(expectedListing);
     });

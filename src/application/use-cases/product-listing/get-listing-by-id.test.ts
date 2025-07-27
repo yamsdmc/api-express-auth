@@ -6,6 +6,7 @@ import { ProductListingEntity } from "@domain/entities/ProductListing";
 import { createValidProductListing } from "./factories/productListing.factory";
 import { UserRepository } from "@domain/repositories/user-repository";
 import { InMemoryUserRepository } from "@infrastructure/repositories/in-memory/in-memory-user-repository";
+import * as console from "node:console";
 
 describe("GetListingByIdUseCase", () => {
   let useCase: GetListingByIdUseCase;
@@ -25,7 +26,7 @@ describe("GetListingByIdUseCase", () => {
   });
 
   it("should return listing for valid id", async () => {
-    userRepository.create({
+    await userRepository.create({
       id: mockListing.sellerId,
       email: "test@example.com",
       password: "hashedPassword",
@@ -40,10 +41,12 @@ describe("GetListingByIdUseCase", () => {
     expect(listing).toBeDefined();
     expect(listing.id).toBe(existingListingId);
     expect(listing.product.title).toBe(mockListing.product.title);
+    expect(listing.product.category).toBe(mockListing.product.category);
+    expect(listing.product.subcategory).toBe(mockListing.product.subcategory);
   });
 
   it("should return listing for valid id with some users informations", async () => {
-    userRepository.create({
+    await userRepository.create({
       id: mockListing.sellerId,
       email: "test@example.com",
       password: "hashedPassword",
@@ -58,11 +61,14 @@ describe("GetListingByIdUseCase", () => {
     expect(listing).toBeDefined();
     expect(listing.id).toBe(existingListingId);
     expect(listing.user).toEqual({
-      fullName: "Test User",
+      fullName: 'Test User',
       numberOfActiveLists: 1,
-      createdAt: "December 2024",
+      createdAt: 'July 2025'
     });
+    expect(listing.product.category).toBeDefined();
+    expect(listing.product.subcategory).toBeDefined();
   });
+
   it("should throw ListingNotFoundError for non-existent id", async () => {
     await expect(useCase.execute("non-existent-id")).rejects.toThrow(
       ListingNotFoundError

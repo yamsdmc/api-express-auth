@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { InMemoryProductListingRepository } from "@infrastructure/repositories/in-memory/in-memory-product-listing-repository";
 import { ProductEntity } from "@domain/entities/Product";
 import { ListingFilters } from "@domain/value-concepts/ListingFilters";
-import { ProductCategory } from "@domain/value-concepts/ProductCategory";
+import { ProductCategory, ProductSubcategory } from "@domain/value-concepts/ProductCategory";
 import { ProductListingEntity } from "@domain/entities/ProductListing";
 import {
   createValidProduct,
@@ -29,6 +29,8 @@ describe("InMemoryProductListingRepository", () => {
       expect(listing.id).toBeDefined();
       expect(listing.sellerId).toBe(sellerId);
       expect(listing.product.title).toBe(mockListing.product.title);
+      expect(listing.product.category).toBe(mockListing.product.category);
+      expect(listing.product.subcategory).toBe(mockListing.product.subcategory);
       expect(listing.createdAt).toBeInstanceOf(Date);
       expect(listing.updatedAt).toBeInstanceOf(Date);
     });
@@ -46,6 +48,8 @@ describe("InMemoryProductListingRepository", () => {
 
       expect(found).toBeDefined();
       expect(found?.id).toBe(created.id);
+      expect(found?.product.category).toBe(mockListing.product.category);
+      expect(found?.product.subcategory).toBe(mockListing.product.subcategory);
     });
   });
 
@@ -61,7 +65,11 @@ describe("InMemoryProductListingRepository", () => {
       await repository.create(
         createValidProductListing({
           sellerId,
-          product: createValidProduct({ title: "macbook PRO" }),
+          product: createValidProduct({ 
+            title: "macbook PRO",
+            category: ProductCategory.ELECTRONICS,
+            subcategory: ProductSubcategory.COMPUTERS_LAPTOPS
+          }),
         })
       );
 
@@ -97,6 +105,8 @@ describe("InMemoryProductListingRepository", () => {
       expect(updated.product.price).toBe(600);
       expect(updated.updatedAt).not.toBe(created.updatedAt);
       expect(updated.product.title).toBe(mockListing.product.title);
+      expect(updated.product.category).toBeDefined();
+      expect(updated.product.subcategory).toBeDefined();
     });
   });
 
@@ -124,11 +134,13 @@ describe("InMemoryProductListingRepository", () => {
       createListing({
         title: "macbook air",
         category: ProductCategory.ELECTRONICS,
+        subcategory: ProductSubcategory.COMPUTERS_LAPTOPS,
         price: 400,
       }),
       createListing({
-        title: "macbook pro",
-        category: ProductCategory.CLOTHING,
+        title: "Nike T-shirt",
+        category: ProductCategory.FASHION_BEAUTY,
+        subcategory: ProductSubcategory.MENS_CLOTHING,
         price: 1000,
       }),
     ];
@@ -159,6 +171,15 @@ describe("InMemoryProductListingRepository", () => {
       expect(result.data[0].product.category).toBe(ProductCategory.ELECTRONICS);
     });
 
+    it("should filter by subcategory", async () => {
+      const result = await repository.findAll(
+        { offset: 0, limit: 10 },
+        { subcategory: ProductSubcategory.MENS_CLOTHING }
+      );
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].product.subcategory).toBe(ProductSubcategory.MENS_CLOTHING);
+    });
+
     it("should filter by min price", async () => {
       const result = await repository.findAll(
         { offset: 0, limit: 10 },
@@ -171,7 +192,7 @@ describe("InMemoryProductListingRepository", () => {
     it("should return empty array when no listings match filters", async () => {
       const result = await repository.findAll(
         { offset: 0, limit: 10 },
-        { category: ProductCategory.BOOKS }
+        { category: ProductCategory.HOME_GARDEN }
       );
       expect(result.data).toHaveLength(0);
       expect(result.total).toBe(0);
@@ -185,6 +206,28 @@ describe("InMemoryProductListingRepository", () => {
       expect(result.data).toHaveLength(1);
       expect(result.data[0].product.category).toBe(ProductCategory.ELECTRONICS);
       expect(result.data[0].product.price).toBe(400);
+    });
+
+    it("should search by query in title", async () => {
+      const result = await repository.findAll(
+        { offset: 0, limit: 10 },
+        { query: "macbook" }
+      );
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].product.title.toLowerCase()).toContain("macbook");
+    });
+
+    it("should combine category and subcategory filters", async () => {
+      const result = await repository.findAll(
+        { offset: 0, limit: 10 },
+        { 
+          category: ProductCategory.ELECTRONICS,
+          subcategory: ProductSubcategory.COMPUTERS_LAPTOPS
+        }
+      );
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].product.category).toBe(ProductCategory.ELECTRONICS);
+      expect(result.data[0].product.subcategory).toBe(ProductSubcategory.COMPUTERS_LAPTOPS);
     });
   });
 });

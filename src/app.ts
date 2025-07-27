@@ -33,6 +33,7 @@ import { UserController } from "@infrastructure/http/controllers/user-controller
 import { GetMeUseCase } from "@application/use-cases/user/get-me";
 import { DeleteAccountUseCase } from "@application/use-cases/user/delete-account";
 import { UpdateUserUseCase } from "@application/use-cases/user/update-user";
+import { createFavoriteRoutes } from "@infrastructure/http/routes/favorite-routes";
 import { VerificationCodeService } from "@application/services/verification-code-service";
 import {
   RepositoryFactory,
@@ -65,6 +66,7 @@ export const createApp = (storageType: StorageType) => {
     repoFactory.createVerificationCodeRepository();
   const blacklistService = repoFactory.createTokenBlacklist();
   const productListingRepository = repoFactory.createProductListingRepository();
+  const favoriteRepository = repoFactory.createFavoriteRepository();
 
   const passwordService = new BcryptPasswordService();
   const tokenService = new JwtTokenService();
@@ -180,6 +182,8 @@ export const createApp = (storageType: StorageType) => {
     "/api/users",
     userRouter(userController, tokenService, blacklistService)
   );
+
+  app.use("/api/favorites", createFavoriteRoutes(tokenService, blacklistService));
 
   app.use("/health", (_, res) => {
     res.send("OK");

@@ -10,6 +10,7 @@ import {
   createValidProduct,
   createValidProductListing,
 } from "./factories/productListing.factory";
+import { ProductCategory, ProductSubcategory } from "@domain/value-concepts/ProductCategory";
 
 describe("UpdateProductListingUseCase", () => {
   let useCase: UpdateProductListingUseCase;
@@ -45,9 +46,27 @@ describe("UpdateProductListingUseCase", () => {
     expect(updated.product.price).toBe(450);
     expect(updated.product.description).toBe("Price reduced!");
     expect(updated.product.title).toBe(mockListing.product.title);
+    expect(updated.product.category).toBe(mockListing.product.category);
+    expect(updated.product.subcategory).toBe(mockListing.product.subcategory);
   });
 
-  it("should throw error when listing does not exist", async () => {
+  it("should update category and subcategory correctly", async () => {
+    const updates: Partial<ProductListingEntity> = {
+      product: createValidProduct({
+        category: ProductCategory.FURNITURE_HOME,
+        subcategory: ProductSubcategory.LIVING_ROOM,
+        price: 200,
+      }),
+    };
+
+    const updated = await useCase.execute(existingListingId, sellerId, updates);
+
+    expect(updated.product.category).toBe(ProductCategory.FURNITURE_HOME);
+    expect(updated.product.subcategory).toBe(ProductSubcategory.LIVING_ROOM);
+    expect(updated.product.price).toBe(200);
+  });
+
+  it("should throw ListingNotFoundError when listing does not exist", async () => {
     const partialListing: Partial<ProductListingEntity> = {
       product: createValidProduct({
         price: 450,
@@ -56,18 +75,19 @@ describe("UpdateProductListingUseCase", () => {
 
     await expect(
       useCase.execute("non-existent-id", sellerId, partialListing)
-    ).rejects.toThrow("Listing not found");
+    ).rejects.toThrow(ListingNotFoundError);
   });
 
-  it("should throw error when seller is not the owner", async () => {
+  it("should throw UnauthorizedListingAccessError when seller is not the owner", async () => {
     const partialListing: Partial<ProductListingEntity> = {
       product: createValidProduct({
         price: 450,
       }),
     };
+    
     await expect(
       useCase.execute(existingListingId, otherSellerId, partialListing)
-    ).rejects.toThrow("Unauthorized: listing does not belong to seller");
+    ).rejects.toThrow(UnauthorizedListingAccessError);
   });
 
   it("should maintain original data for unmodified fields", async () => {
@@ -106,26 +126,5 @@ describe("UpdateProductListingUseCase", () => {
     expect(updated.updatedAt.getTime()).toBeGreaterThan(
       originalUpdatedAt.getTime()
     );
-  });
-  it("should throw ListingNotFoundError when listing does not exist", async () => {
-    const partialListing: Partial<ProductListingEntity> = {
-      product: createValidProduct({
-        price: 450,
-      }),
-    };
-    await expect(
-      useCase.execute("non-existent-id", sellerId, partialListing)
-    ).rejects.toThrow(ListingNotFoundError);
-  });
-
-  it("should throw UnauthorizedListingAccessError when seller is not the owner", async () => {
-    const partialListing: Partial<ProductListingEntity> = {
-      product: createValidProduct({
-        price: 450,
-      }),
-    };
-    await expect(
-      useCase.execute(existingListingId, otherSellerId, partialListing)
-    ).rejects.toThrow(UnauthorizedListingAccessError);
   });
 });

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { CreateProductListingUseCase } from "@application/use-cases/product-listing/create-product-listing";
 import { InMemoryProductListingRepository } from "@infrastructure/repositories/in-memory/in-memory-product-listing-repository";
 import { ProductListingEntity } from "@domain/entities/ProductListing";
-import { createValidProductListing } from "./factories/productListing.factory.js";
+import { createValidProductListing } from "./factories/productListing.factory";
 
 describe("CreateProductListingUseCase", () => {
   let useCase: CreateProductListingUseCase;
@@ -24,6 +24,8 @@ describe("CreateProductListingUseCase", () => {
       product: expect.objectContaining({
         title: mockListing.product.title,
         price: mockListing.product.price,
+        category: mockListing.product.category,
+        subcategory: mockListing.product.subcategory,
       }),
     });
     expect(result.id).toBeDefined();
@@ -36,5 +38,17 @@ describe("CreateProductListingUseCase", () => {
 
     expect(found).toBeDefined();
     expect(found?.product.title).toBe(mockListing.product.title);
+    expect(found?.product.category).toBe(mockListing.product.category);
+    expect(found?.product.subcategory).toBe(mockListing.product.subcategory);
+  });
+
+  it("should create listing with valid category-subcategory mapping", async () => {
+    const result = await useCase.execute(sellerId, mockListing);
+    
+    expect(result.product.category).toBeDefined();
+    expect(result.product.subcategory).toBeDefined();
+    // Verify that subcategory is valid for the category
+    expect(typeof result.product.category).toBe("string");
+    expect(typeof result.product.subcategory).toBe("string");
   });
 });

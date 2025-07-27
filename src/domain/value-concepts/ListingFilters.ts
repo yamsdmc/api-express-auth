@@ -1,6 +1,8 @@
 import {
   ProductCategory,
   ProductCategoryType,
+  ProductSubcategoryType,
+  ProductGenderType,
 } from "@domain/value-concepts/ProductCategory";
 import {
   ProductCondition,
@@ -9,6 +11,8 @@ import {
 
 export interface ListingFilters {
   category?: ProductCategoryType;
+  subcategory?: ProductSubcategoryType;
+  gender?: ProductGenderType;
   minPrice?: number;
   maxPrice?: number;
   condition?: ProductConditionType;
@@ -42,5 +46,6 @@ export const listingFiltersUtils = {
     ) {
       throw new Error(`Invalid condition: ${filters.condition}`);
     }
+    // Note: subcategory et gender validation sera fait au niveau du repository
   },
 };

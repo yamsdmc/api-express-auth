@@ -6,8 +6,11 @@ import { PostgresqlProductListingRepository } from "@infrastructure/database/pos
 import { PostgresqlVerificationCodeRepository } from "@infrastructure/database/postgresql/repositories/PostgresqlVerificationCodeRepository";
 import { PostgresqlRefreshTokenRepository } from "@infrastructure/database/postgresql/repositories/PostgresqlRefreshTokenRepository";
 import { PostgresqlUserRepository } from "@infrastructure/database/postgresql/repositories/PostgresqlUserRepository";
+import { PostgresqlFavoriteRepository } from "@infrastructure/database/postgresql/repositories/PostgresqlFavoriteRepository";
 import { InMemoryTokenBlacklist } from "@infrastructure/services/token-blacklist";
 import { PostgresqlTokenBlacklist } from "@infrastructure/database/postgresql/repositories/PostgresqlTokenBlacklist";
+import { InMemoryFavoriteRepository } from "@infrastructure/repositories/in-memory/in-memory-favorite-repository";
+import { FavoriteRepository } from "@/domain/repositories/favorite-repository";
 
 export type StorageType = "memory" | "postgresql";
 
@@ -42,5 +45,11 @@ export class RepositoryFactory {
     return this.storageType === "memory"
       ? new InMemoryTokenBlacklist()
       : new PostgresqlTokenBlacklist();
+  }
+
+  createFavoriteRepository(): FavoriteRepository {
+    return this.storageType === "memory"
+      ? new InMemoryFavoriteRepository()
+      : new PostgresqlFavoriteRepository();
   }
 }

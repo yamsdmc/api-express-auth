@@ -5,6 +5,7 @@ import {
   createValidProduct,
   createValidProductListing,
 } from "./factories/productListing.factory";
+import { ProductCategory, ProductSubcategory } from "@domain/value-concepts/ProductCategory";
 
 describe("GetSellerListingsUseCase", () => {
   let useCase: GetSellerListingsUseCase;
@@ -19,19 +20,31 @@ describe("GetSellerListingsUseCase", () => {
     await repository.create(
       createValidProductListing({
         sellerId,
-        product: createValidProduct({ title: "iPhone 12" }),
+        product: createValidProduct({ 
+          title: "iPhone 12",
+          category: ProductCategory.ELECTRONICS,
+          subcategory: ProductSubcategory.SMARTPHONES_TABLETS
+        }),
       })
     );
     await repository.create(
       createValidProductListing({
         sellerId,
-        product: createValidProduct({ title: "iPhone 13" }),
+        product: createValidProduct({ 
+          title: "iPhone 13",
+          category: ProductCategory.ELECTRONICS,
+          subcategory: ProductSubcategory.SMARTPHONES_TABLETS
+        }),
       })
     );
     await repository.create(
       createValidProductListing({
         sellerId: otherSellerId,
-        product: createValidProduct({ title: "Macbook pro" }),
+        product: createValidProduct({ 
+          title: "Macbook pro",
+          category: ProductCategory.ELECTRONICS,
+          subcategory: ProductSubcategory.COMPUTERS_LAPTOPS
+        }),
       })
     );
   });
@@ -50,6 +63,12 @@ describe("GetSellerListingsUseCase", () => {
       expect(listings.map((listing) => listing.product.title)).toContain(
         "iPhone 13"
       );
+      
+      // Verify category and subcategory are present
+      listings.forEach(listing => {
+        expect(listing.product.category).toBeDefined();
+        expect(listing.product.subcategory).toBeDefined();
+      });
     });
 
     it("should return empty array for seller with no listings", async () => {
@@ -61,9 +80,23 @@ describe("GetSellerListingsUseCase", () => {
       const listings = await useCase.execute(sellerId);
 
       const otherSellerProducts = listings.filter(
-        (listing) => listing.product.title === "Samsung Galaxy"
+        (listing) => listing.product.title === "Macbook pro"
       );
       expect(otherSellerProducts).toHaveLength(0);
+    });
+
+    it("should return listings with proper structure including categories", async () => {
+      const listings = await useCase.execute(sellerId);
+
+      listings.forEach(listing => {
+        expect(listing.product).toMatchObject({
+          title: expect.any(String),
+          category: expect.any(String),
+          subcategory: expect.any(String),
+          price: expect.any(Number),
+          condition: expect.any(String),
+        });
+      });
     });
   });
 
@@ -72,6 +105,7 @@ describe("GetSellerListingsUseCase", () => {
       const count = await useCase.countSellerListings(sellerId);
       expect(count).toBe(2);
     });
+    
     it("should return 0 for a seller with no listings", async () => {
       const count = await useCase.countSellerListings("non-existent-seller");
       expect(count).toBe(0);

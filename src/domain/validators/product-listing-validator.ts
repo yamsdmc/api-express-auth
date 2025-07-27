@@ -10,6 +10,8 @@ import {
 import {
   ProductCategory,
   productCategoryUtils,
+  ProductSubcategoryType,
+  ProductGenderType,
 } from "@domain/value-concepts/ProductCategory";
 
 export class ProductListingValidator {
@@ -27,6 +29,8 @@ export class ProductListingValidator {
     this.validateTitle(listing.product.title);
     this.validateDescription(listing.product.description);
     this.validateCategory(listing.product.category);
+    this.validateSubcategory(listing.product.category, listing.product.subcategory);
+    this.validateGender(listing.product.subcategory, listing.product.gender);
     this.validatePhoneNumber(listing.phoneNumber);
   }
 
@@ -82,6 +86,33 @@ export class ProductListingValidator {
       throw new InvalidCategoryError(
         `Invalid category. Must be one of: ${Object.values(ProductCategory).join(", ")}`
       );
+    }
+  }
+
+  private static validateSubcategory(category: string, subcategory: ProductSubcategoryType): void {
+    if (!productCategoryUtils.isValidSubcategory(subcategory)) {
+      throw new InvalidCategoryError("Invalid subcategory");
+    }
+
+    const validSubcategories = productCategoryUtils.getSubcategoriesForCategory(category as any);
+    if (!validSubcategories.includes(subcategory)) {
+      throw new InvalidCategoryError(
+        `Subcategory ${subcategory} is not valid for category ${category}`
+      );
+    }
+  }
+
+  private static validateGender(subcategory: ProductSubcategoryType, gender?: ProductGenderType): void {
+    if (productCategoryUtils.requiresGender(subcategory)) {
+      if (!gender) {
+        throw new InvalidCategoryError(
+          `Gender is required for subcategory ${subcategory}`
+        );
+      }
+      
+      if (!productCategoryUtils.isValidGender(gender)) {
+        throw new InvalidCategoryError("Invalid gender");
+      }
     }
   }
 
