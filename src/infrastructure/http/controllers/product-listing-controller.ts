@@ -45,12 +45,15 @@ export class ProductListingController {
                     : undefined,
                 query: req.query.query ? (req.query.query as string) : undefined,
             };
+            console.log("Filters:", filters);
+            console.log("Pagination:", pagination);
 
             const listings = await this.getListingsUseCase.execute({
                 pagination,
                 filters,
             });
 
+            console.log("Fetched listings:", listings);
             res.json({
                 data: listings.data,
                 total: listings.total

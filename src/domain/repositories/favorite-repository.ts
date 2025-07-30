@@ -21,6 +21,8 @@ export interface FavoriteRepository {
   /**
    * Get user's favorite listings with full listing details
    */
+
+
   getUserFavorites(userId: string): Promise<ProductListingEntity[]>;
 
   /**

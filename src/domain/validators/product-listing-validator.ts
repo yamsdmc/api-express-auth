@@ -15,7 +15,7 @@ import {
 } from "@domain/value-concepts/ProductCategory";
 
 export class ProductListingValidator {
-  private static readonly MAX_IMAGES = 5;
+  private static readonly MAX_IMAGES = 3;
   private static readonly MIN_PRICE = 0;
   private static readonly MAX_PRICE = 1000000; // 1 million
   private static readonly MIN_TITLE_LENGTH = 3;

@@ -125,3 +125,33 @@ export class UserNotFoundError extends UserError {
     super("User not found", "USER_001", 404);
   }
 }
+
+export class FavoriteError extends ApplicationError {
+  constructor(message: string, code: string, status = 400) {
+    super(message, code, status);
+  }
+}
+
+export class InvalidUserIdError extends FavoriteError {
+  constructor() {
+    super("UserId is required", "FAVORITE_001", 400);
+  }
+}
+
+export class FavoriteAlreadyExistsError extends FavoriteError {
+  constructor() {
+    super("This listing is already in your favorites", "FAVORITE_ALREADY_EXISTS", 409);
+  }
+}
+
+export class FavoriteNotFoundError extends FavoriteError {
+  constructor() {
+    super("This listing is not in your favorites", "FAVORITE_NOT_FOUND", 404);
+  }
+}
+
+export class OwnListingFavoriteError extends FavoriteError {
+  constructor() {
+    super("You cannot add your own listing to favorites", "FAVORITE_OWN_LISTING", 403);
+  }
+}

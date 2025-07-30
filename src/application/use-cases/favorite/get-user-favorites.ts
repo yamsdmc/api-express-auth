@@ -1,6 +1,8 @@
-import { FavoriteRepository } from '../../../domain/repositories/favorite-repository';
-import { UserRepository } from '../../../domain/repositories/user-repository';
-import { ProductListing } from '../../../domain/entities/ProductListing';
+import {FavoriteRepository} from '@domain/repositories/favorite-repository';
+import {UserRepository} from '@domain/repositories/user-repository';
+import {ProductListingEntity} from '@domain/entities/ProductListing';
+import {InvalidUserIdError, UserNotFoundError} from '@domain/errors';
+import * as console from "node:console";
 
 /**
  * Get User Favorites Use Case
@@ -14,22 +16,19 @@ export class GetUserFavoritesUseCase {
     private userRepository: UserRepository
   ) {}
 
-  async execute(userId: string): Promise<ProductListing[]> {
-    // Validate inputs
+  async execute(userId: string): Promise<ProductListingEntity[]> {
+    // Domain validation: Input must be valid
     if (!userId) {
-      throw new Error('UserId is required');
+      throw new InvalidUserIdError();
     }
 
-    // Business rule: User must exist
-    const user = await this.userRepository.getById(userId);
+    // Domain rule: User must exist to have favorites
+    const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new UserNotFoundError();
     }
+    console.log('user', user)
 
-    // Get favorites with listing details
-    const favorites = await this.favoriteRepository.getUserFavorites(userId);
-
-    // Apply business logic: filter only active listings
-    return favorites.filter(listing => listing.isActive !== false);
+   return await this.favoriteRepository.getUserFavorites(userId);
   }
 }

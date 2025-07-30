@@ -1,5 +1,6 @@
 import { FavoriteRepository } from '../../../domain/repositories/favorite-repository';
 import { UserRepository } from '../../../domain/repositories/user-repository';
+import { InvalidUserIdError, UserNotFoundError, FavoriteNotFoundError } from '../../../domain/errors';
 
 /**
  * Remove from Favorites Use Case
@@ -13,21 +14,21 @@ export class RemoveFromFavoritesUseCase {
   ) {}
 
   async execute(userId: string, listingId: string): Promise<void> {
-    // Validate inputs
+    // Domain validation: Input must be valid
     if (!userId || !listingId) {
-      throw new Error('UserId and ListingId are required');
+      throw new InvalidUserIdError();
     }
 
-    // Business rule: User must exist
-    const user = await this.userRepository.getById(userId);
+    // Domain rule: User must exist
+    const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new UserNotFoundError();
     }
 
-    // Check if listing is in favorites
+    // Domain rule: Can only remove existing favorites
     const isFavorite = await this.favoriteRepository.isFavorite(userId, listingId);
     if (!isFavorite) {
-      throw new Error('This listing is not in your favorites');
+      throw new FavoriteNotFoundError();
     }
 
     // Remove from favorites

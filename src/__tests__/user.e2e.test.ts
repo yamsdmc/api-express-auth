@@ -87,7 +87,9 @@ describe("User API", () => {
     it("should delete account with correct password", async () => {
       await insertUser(app, testUser);
       const userFounded = await userRepository.findByEmail(testUser.email);
-      await userRepository.update(userFounded!.id!, { isVerified: true });
+      if (userFounded) {
+        await userRepository.update(userFounded.id, { isVerified: true });
+      }
 
       const loginRes = await request(app)
         .post("/api/auth/login")

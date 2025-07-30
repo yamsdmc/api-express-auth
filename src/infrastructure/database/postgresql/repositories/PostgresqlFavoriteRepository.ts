@@ -4,6 +4,7 @@ import { Favorite, CreateFavoriteData, FavoritesFilter, FavoriteFactory } from '
 import { ProductListingEntity } from '../../../../domain/entities/ProductListing';
 import { ProductListingMapper } from '../mappers/product-listing-mapper';
 import { pool } from '../client';
+import * as console from "node:console";
 
 /**
  * PostgreSQL implementation of the Favorite Repository
@@ -68,8 +69,44 @@ export class PostgresqlFavoriteRepository implements FavoriteRepository {
       ORDER BY f.created_at DESC
     `;
 
-    const result = await this.pool.query(query, [userId]);
-    return result.rows.map(row => ProductListingMapper.toEntity(row));
+    console.log('🔍 [FAVORITES] Starting getUserFavorites for userId:', userId);
+    console.log('📝 [FAVORITES] Executing query:', query.replace(/\s+/g, ' ').trim());
+    
+    try {
+      const startTime = Date.now();
+      const result = await this.pool.query(query, [userId]);
+      const endTime = Date.now();
+      
+      console.log('✅ [FAVORITES] Query executed successfully');
+      console.log('⏱️ [FAVORITES] Query duration:', endTime - startTime, 'ms');
+      console.log('📊 [FAVORITES] Rows found:', result.rows.length);
+      
+      if (result.rows.length > 0) {
+        console.log('🔍 [FAVORITES] First row sample:', {
+          listing_id: result.rows[0].id,
+          title: result.rows[0].title,
+          seller_id: result.rows[0].seller_id,
+          user_firstname: result.rows[0].user_firstname
+        });
+      } else {
+        console.log('📭 [FAVORITES] No favorites found for user:', userId);
+      }
+
+      const mappedResults = result.rows.map(row => ProductListingMapper.toEntity(row));
+      console.log('🔄 [FAVORITES] Mapped to entities:', mappedResults.length, 'items');
+      
+      return mappedResults;
+      
+    } catch (error) {
+      console.error('❌ [FAVORITES] Database error in getUserFavorites:', error);
+      console.error('📋 [FAVORITES] Error details:', {
+        userId,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        errorCode: (error as any)?.code,
+        errorDetail: (error as any)?.detail
+      });
+      throw error; // Re-throw to let upper layers handle it
+    }
   }
 
   async isFavorite(userId: string, listingId: string): Promise<boolean> {

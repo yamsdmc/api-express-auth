@@ -84,7 +84,7 @@ describe("ProductListingValidator", () => {
           ...validListing,
           product: {
             ...validListing.product,
-            images: ["data:image/png;base64,1", "data:image/png;base64,2", "data:image/png;base64,3", "data:image/png;base64,4", "data:image/png;base64,5", "data:image/png;base64,6"],
+            images: ["data:image/png;base64,1", "data:image/png;base64,2", "data:image/png;base64,3", "data:image/png;base64,4"],
           },
         })
       ).toThrow(InvalidImagesError);
