@@ -38,7 +38,6 @@ export class VerificationCodeService {
   ): Promise<boolean> {
     const verificationCode =
       await this.verificationCodeRepository.findByCode(code);
-    console.log({ verificationCode });
     if (!verificationCode) return false;
     if (verificationCode.userId !== userId) return false;
     if (verificationCode.type !== type) return false;
